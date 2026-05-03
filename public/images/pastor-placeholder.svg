@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" width="480" height="600">
+  <rect width="480" height="600" fill="#f1f5f9"/>
+  <circle cx="240" cy="220" r="100" fill="#02567D" opacity="0.18"/>
+  <path d="M240 240 C 195 240, 160 280, 160 340 L 160 480 L 320 480 L 320 340 C 320 280, 285 240, 240 240 Z"
+    fill="#02567D" opacity="0.18"/>
+  <text x="240" y="540" text-anchor="middle"
+    font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"
+    font-size="22" font-weight="600" fill="#475569">홍길동 목사</text>
+  <text x="240" y="572" text-anchor="middle"
+    font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif"
+    font-size="14" fill="#94a3b8">사진을 admin/settings에서 업로드하세요</text>
+</svg>
