@@ -8,32 +8,48 @@ Next.js + Supabase + Vercel 기반의 한국 교회용 홈페이지 템플릿. *
 
 ## ✨ 무엇을 얻나요?
 
-- 메인 페이지 (8개 섹션 — 환영/비전/이번주 설교/콘텐츠 4분할/갤러리/빠른 신청/온라인 헌금/오시는 길)
-- 교회안내 (인사말/예배안내/오시는 길/교회비전)
-- 예배와 말씀 (주일설교/목양칼럼/특별영상)
-- 교회소식 (공지/주보)
-- 갤러리 (앨범 + 사진)
-- 신청 폼 (새가족 등록/기도제목/심방 요청) + 자동 메일 알림
-- 자료실
-- 관리자 페이지 (모든 콘텐츠 CRUD + 사이트 설정 + 폼 제출 관리)
-- 모바일 반응형 + 시니어 가독성 최적화 + RSS 피드 + SEO 메타데이터
+- **메인 페이지** (9개 섹션 — 환영/비전/예배시간/이번주 설교영상/콘텐츠 4분할/빠른신청/갤러리/온라인헌금/오시는길)
+- **교회안내** (인사말/예배안내/오시는 길/교회비전)
+- **예배와 말씀** (주일설교/목양칼럼/특별영상)
+- **교회소식** (공지/주보/행사일정), **갤러리**, **자료실**, **선교 소개**
+- **온라인 신청 폼** (새가족 등록/기도제목/심방 요청/기부금영수증) + 자동 메일 알림
+- **관리자 페이지** — 모든 콘텐츠 관리 + 사이트 설정 + 팝업·배너 + 휴지통/임시저장 + 방문자 통계
+- **선택 자동화** (키 등록 시) — 유튜브 설교 자동 동기화 · AI 주보 자동 분석(Gemini) · 캡차 · 에러 모니터링
+- 모바일 반응형 · 사진 패럴럭스 · 부드러운 등장 효과 · RSS 피드 · SEO 메타데이터
 
 ---
 
 ## 🚀 시작하기 (3단계)
 
-### 1. 사전 준비물 — 4개 계정 가입
+### 1. 사전 준비물
 
-먼저 다음 계정을 만드세요 (모두 무료 티어 충분):
+**① 도구 1개 — Claude Code (필수)**
+
+설정 인터뷰(`/setup-church`)가 여기서 돌아갑니다. 없으면 먼저 설치하세요 → [claude.ai/code](https://claude.ai/code)
+
+**② 계정 4개 — 모두 무료로 시작 (신용카드 불필요)**
 
 | 서비스 | 용도 | 가입 |
 |---|---|---|
-| **GitHub** | 코드 저장소 | https://github.com/signup |
-| **Supabase** | 데이터베이스 + 로그인 | https://supabase.com (GitHub 로그인) |
-| **Vercel** | 호스팅/배포 | https://vercel.com (GitHub 로그인) |
-| **Resend** | 이메일 발송 (폼 알림) | https://resend.com (GitHub 로그인) |
+| **GitHub** | 코드 저장소 + 배포 연동 | https://github.com/signup |
+| **Supabase** | 데이터베이스 + 로그인 + 파일 저장 | https://supabase.com (GitHub 로그인) |
+| **Vercel** | 홈페이지 호스팅/배포 | https://vercel.com (GitHub 로그인) |
+| **Resend** | 폼 신청 시 알림 메일 발송 | https://resend.com (GitHub 로그인) |
 
-자세한 단계별 가입 가이드는 [SETUP.md](./SETUP.md) 참조.
+> 💡 Supabase·Vercel·Resend는 **GitHub 계정으로 바로 로그인**할 수 있어, 사실상 GitHub 하나면 시작됩니다. 모두 무료 요금제로 운영 가능합니다.
+
+**③ 선택 — 나중에 필요할 때만 (없어도 자동으로 꺼짐)**
+
+아래 기능은 각 키를 등록하면 켜지고, 등록 전에는 조용히 비활성됩니다. 처음엔 신경 쓰지 않아도 됩니다.
+
+| 기능 | 필요한 키 |
+|---|---|
+| 유튜브 설교 자동 동기화 | YouTube Data API 키 |
+| AI 주보 자동 분석 | Google AI Studio(Gemini) 키 — 무료 티어 |
+| 스팸 방지 캡차 | Cloudflare Turnstile 키 |
+| 에러 모니터링 | Sentry DSN |
+
+선택 키 목록은 [`.env.local.example`](./.env.local.example), 단계별 가입 가이드는 [SETUP.md](./SETUP.md) 참조.
 
 ### 2. 이 템플릿으로 새 저장소 만들기
 
@@ -122,7 +138,7 @@ src/
 │   └── globals.css       # 색상 변수 (apply-config가 교체)
 ├── components/
 │   ├── layout/           # Header, Footer, Navigation
-│   ├── sections/         # 메인 페이지 섹션 8개
+│   ├── sections/         # 메인 페이지 섹션 (패럴럭스 포함)
 │   ├── admin/            # 관리자 UI 부속
 │   ├── board/            # 게시판 공통 (List, Pagination 등)
 │   ├── ui/               # shadcn/ui
@@ -137,7 +153,7 @@ src/
 └── ...
 
 church.config.ts          # 단일 진실의 소스 (인터뷰 산출물)
-supabase/migrations/      # DB 스키마 (0001~0008)
+supabase/migrations/      # DB 스키마 (0001~0023)
 .claude/skills/setup-church/  # 인터뷰 + 자동화 Skill
 public/images/            # 로고, 슬라이드, 갤러리 (placeholder는 자동 생성)
 ```
