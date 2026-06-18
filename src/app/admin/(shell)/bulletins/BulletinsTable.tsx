@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Pencil, FileText, ImageIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -100,6 +101,14 @@ export function BulletinsTable({ data }: { data: Bulletin[] }) {
                     >
                       {b.title}
                     </Link>
+                    {b.is_draft ? (
+                      <Badge
+                        variant="outline"
+                        className="ml-2 border-amber-300 bg-amber-50 text-amber-700"
+                      >
+                        초안
+                      </Badge>
+                    ) : null}
                   </TableCell>
                   <TableCell className="px-4 text-warm-gray">
                     {format(parseISO(b.bulletin_date), "yyyy.MM.dd (EEE)")}

@@ -9,6 +9,7 @@ export async function GET() {
     page: 1,
     perPage: 50,
     category: "news",
+    publishedOnly: true,
   }).catch(() => ({ data: [], total: 0 }));
 
   const xml = buildRss(

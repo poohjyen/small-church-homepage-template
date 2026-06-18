@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { toast } from "sonner";
-import { Pin } from "lucide-react";
+import { Pin, FileEdit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +43,7 @@ export function NoticeForm({
       title: initial?.title ?? "",
       content: initial?.content ?? "",
       is_pinned: initial?.is_pinned ?? false,
+      is_draft: initial?.is_draft ?? false,
       category: initial?.category ?? defaultCategory,
     },
   });
@@ -161,6 +162,32 @@ export function NoticeForm({
                   </FormLabel>
                   <p className="mt-1 text-xs text-warm-gray">
                     중요한 공지일 경우 체크하세요. 목록 상단에 우선 표시됩니다.
+                  </p>
+                </div>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="is_draft"
+          render={({ field }) => (
+            <FormItem className="rounded-xl bg-soft p-4 ring-1 ring-black/5">
+              <div className="flex items-start gap-3">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value ?? false}
+                    onCheckedChange={(c) => field.onChange(c === true)}
+                  />
+                </FormControl>
+                <div className="-mt-0.5">
+                  <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-charcoal">
+                    <FileEdit className="size-4 text-primary-navy" aria-hidden />
+                    임시저장(초안)
+                  </FormLabel>
+                  <p className="mt-1 text-xs text-warm-gray">
+                    체크하면 초안으로 저장되어 공개 페이지에 노출되지 않습니다.
                   </p>
                 </div>
               </div>

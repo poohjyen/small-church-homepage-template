@@ -126,7 +126,7 @@ export async function deleteResource(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("resources")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/resources");
@@ -147,7 +147,7 @@ export async function bulkDeleteResources(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("resources")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/resources");

@@ -90,7 +90,7 @@ export async function deleteVideo(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("videos")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/videos");
@@ -111,7 +111,7 @@ export async function bulkDeleteVideos(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("videos")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/videos");

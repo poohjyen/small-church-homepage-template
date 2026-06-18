@@ -182,7 +182,7 @@ export async function deleteGallery(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("galleries")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/gallery");
@@ -198,7 +198,7 @@ export async function deleteGalleryImage(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("gallery_images")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", imageId);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/gallery");
@@ -220,7 +220,7 @@ export async function bulkDeleteGalleries(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("galleries")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/gallery");

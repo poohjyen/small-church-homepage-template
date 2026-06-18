@@ -11,7 +11,7 @@ export default async function EditSermonPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const sermon = await getSermonById(id);
+  const sermon = await getSermonById(id, { publishedOnly: false });
   if (!sermon) notFound();
 
   return (

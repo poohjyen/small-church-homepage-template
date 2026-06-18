@@ -11,7 +11,7 @@ export default async function EditColumnPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const column = await getColumnById(id);
+  const column = await getColumnById(id, { publishedOnly: false });
   if (!column) notFound();
 
   return (

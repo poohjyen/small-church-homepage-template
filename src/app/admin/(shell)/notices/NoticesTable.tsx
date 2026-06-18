@@ -122,6 +122,14 @@ export function NoticesTable({ data, hideCategory = false }: Props) {
                     >
                       {n.title}
                     </Link>
+                    {n.is_draft ? (
+                      <Badge
+                        variant="outline"
+                        className="ml-2 border-amber-300 bg-amber-50 text-amber-700"
+                      >
+                        초안
+                      </Badge>
+                    ) : null}
                   </TableCell>
                   <TableCell className="px-4 text-warm-gray">
                     {format(parseISO(n.created_at), "yyyy.MM.dd")}

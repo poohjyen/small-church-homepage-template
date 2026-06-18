@@ -19,6 +19,7 @@ import {
   LayoutPanelTop,
   PictureInPicture2,
   ReceiptText,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -81,6 +82,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "히어로 슬라이드", href: "/admin/hero", icon: Images },
       { label: "랜딩 섹션 순서", href: "/admin/landing", icon: LayoutPanelTop },
       { label: "팝업/배너", href: "/admin/popups", icon: PictureInPicture2 },
+      { label: "휴지통", href: "/admin/trash", icon: Trash2 },
     ],
   },
 ];

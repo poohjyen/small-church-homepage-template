@@ -42,9 +42,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   const [notices, sermons, columns, galleries, customPages] = await Promise.all([
-    getNotices({ page: 1, perPage: 200 }).catch(() => ({ data: [], total: 0 })),
-    getSermons({ page: 1, perPage: 200 }).catch(() => ({ data: [], total: 0 })),
-    getColumns({ page: 1, perPage: 200 }).catch(() => ({ data: [], total: 0 })),
+    getNotices({ page: 1, perPage: 200, publishedOnly: true }).catch(() => ({
+      data: [],
+      total: 0,
+    })),
+    getSermons({ page: 1, perPage: 200, publishedOnly: true }).catch(() => ({
+      data: [],
+      total: 0,
+    })),
+    getColumns({ page: 1, perPage: 200, publishedOnly: true }).catch(() => ({
+      data: [],
+      total: 0,
+    })),
     getGalleries({ page: 1, perPage: 200 }).catch(() => ({ data: [], total: 0 })),
     getCustomPageSummaries().catch(() => []),
   ]);

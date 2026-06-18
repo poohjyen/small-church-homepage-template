@@ -18,7 +18,10 @@ export async function getResources({
 } = {}): Promise<ResourcesPage> {
   const supabase = await createClient();
   const start = (page - 1) * perPage;
-  let query = supabase.from("resources").select("*", { count: "exact" });
+  let query = supabase
+    .from("resources")
+    .select("*", { count: "exact" })
+    .is("deleted_at", null);
   if (category && category !== "전체") {
     query = query.eq("category", category);
   }
@@ -40,6 +43,7 @@ export async function getResourceById(id: string): Promise<Resource | null> {
     .from("resources")
     .select("*")
     .eq("id", id)
+    .is("deleted_at", null)
     .maybeSingle();
   if (error) throw error;
   return data;

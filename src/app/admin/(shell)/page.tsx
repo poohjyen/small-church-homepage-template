@@ -63,7 +63,7 @@ export default async function AdminDashboardPage() {
       getRecentNotices(1),
       getLatestBulletin(),
       getRecentSermons(1),
-      getColumns({ page: 1, perPage: 1 }),
+      getColumns({ page: 1, perPage: 1, publishedOnly: true }),
       countNewSubmissions(),
       getContentStats(),
       getVisitorStats(7),

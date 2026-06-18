@@ -7,10 +7,23 @@ export async function getBulletins({
   page = 1,
   perPage = 12,
   search,
-}: { page?: number; perPage?: number; search?: string } = {}): Promise<BulletinsPage> {
+  publishedOnly = false,
+  draftOnly = false,
+}: {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  publishedOnly?: boolean;
+  draftOnly?: boolean;
+} = {}): Promise<BulletinsPage> {
   const supabase = await createClient();
   const start = (page - 1) * perPage;
-  let q = supabase.from("bulletins").select("*", { count: "exact" });
+  let q = supabase
+    .from("bulletins")
+    .select("*", { count: "exact" })
+    .is("deleted_at", null);
+  if (draftOnly) q = q.eq("is_draft", true);
+  else if (publishedOnly) q = q.eq("is_draft", false);
   if (search?.trim()) {
     const t = search.trim();
     q = q.ilike("title", `%${t}%`);
@@ -28,6 +41,8 @@ export async function getLatestBulletin(): Promise<Bulletin | null> {
   const { data, error } = await supabase
     .from("bulletins")
     .select("*")
+    .is("deleted_at", null)
+    .eq("is_draft", false)
     .order("bulletin_date", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -41,6 +56,8 @@ export async function getBulletinById(id: string): Promise<Bulletin | null> {
     .from("bulletins")
     .select("*")
     .eq("id", id)
+    .is("deleted_at", null)
+    .eq("is_draft", false)
     .maybeSingle();
   if (error) throw error;
   return data;
@@ -60,6 +77,8 @@ export async function getAdjacentBulletin(
       .select("id,title")
       .lt("bulletin_date", bulletinDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
+      .eq("is_draft", false)
       .order("bulletin_date", { ascending: false })
       .limit(1)
       .maybeSingle(),
@@ -68,6 +87,8 @@ export async function getAdjacentBulletin(
       .select("id,title")
       .gt("bulletin_date", bulletinDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
+      .eq("is_draft", false)
       .order("bulletin_date", { ascending: true })
       .limit(1)
       .maybeSingle(),

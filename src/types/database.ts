@@ -11,71 +11,71 @@ export type Database = {
     Tables: {
       notices: {
         Row: Notice;
-        Insert: Omit<Notice, "id" | "view_count" | "created_at" | "updated_at"> &
-          Partial<Pick<Notice, "id" | "view_count" | "created_at" | "updated_at">>;
+        Insert: Omit<Notice, "id" | "view_count" | "created_at" | "updated_at" | "is_draft" | "deleted_at"> &
+          Partial<Pick<Notice, "id" | "view_count" | "created_at" | "updated_at" | "is_draft" | "deleted_at">>;
         Update: Partial<Notice>;
         Relationships: [];
       };
       sermons: {
         Row: Sermon;
-        Insert: Omit<Sermon, "id" | "preacher" | "created_at"> &
-          Partial<Pick<Sermon, "id" | "preacher" | "created_at">>;
+        Insert: Omit<Sermon, "id" | "preacher" | "created_at" | "is_draft" | "deleted_at"> &
+          Partial<Pick<Sermon, "id" | "preacher" | "created_at" | "is_draft" | "deleted_at">>;
         Update: Partial<Sermon>;
         Relationships: [];
       };
       pastoral_columns: {
         Row: PastoralColumn;
-        Insert: Omit<PastoralColumn, "id" | "author" | "created_at"> &
-          Partial<Pick<PastoralColumn, "id" | "author" | "created_at">>;
+        Insert: Omit<PastoralColumn, "id" | "author" | "created_at" | "is_draft" | "deleted_at"> &
+          Partial<Pick<PastoralColumn, "id" | "author" | "created_at" | "is_draft" | "deleted_at">>;
         Update: Partial<PastoralColumn>;
         Relationships: [];
       };
       bulletins: {
         Row: Bulletin;
-        Insert: Omit<Bulletin, "id" | "created_at"> &
-          Partial<Pick<Bulletin, "id" | "created_at">>;
+        Insert: Omit<Bulletin, "id" | "created_at" | "is_draft" | "deleted_at"> &
+          Partial<Pick<Bulletin, "id" | "created_at" | "is_draft" | "deleted_at">>;
         Update: Partial<Bulletin>;
         Relationships: [];
       };
       galleries: {
         Row: Gallery;
-        Insert: Omit<Gallery, "id" | "created_at"> &
-          Partial<Pick<Gallery, "id" | "created_at">>;
+        Insert: Omit<Gallery, "id" | "created_at" | "deleted_at"> &
+          Partial<Pick<Gallery, "id" | "created_at" | "deleted_at">>;
         Update: Partial<Gallery>;
         Relationships: [];
       };
       gallery_images: {
         Row: GalleryImage;
-        Insert: Omit<GalleryImage, "id" | "display_order" | "created_at"> &
-          Partial<Pick<GalleryImage, "id" | "display_order" | "created_at">>;
+        Insert: Omit<GalleryImage, "id" | "display_order" | "created_at" | "deleted_at"> &
+          Partial<Pick<GalleryImage, "id" | "display_order" | "created_at" | "deleted_at">>;
         Update: Partial<GalleryImage>;
         Relationships: [];
       };
       resources: {
         Row: Resource;
-        Insert: Omit<Resource, "id" | "download_count" | "created_at"> &
-          Partial<Pick<Resource, "id" | "download_count" | "created_at">>;
+        Insert: Omit<Resource, "id" | "download_count" | "created_at" | "deleted_at"> &
+          Partial<Pick<Resource, "id" | "download_count" | "created_at" | "deleted_at">>;
         Update: Partial<Resource>;
         Relationships: [];
       };
       newcomer_forms: {
         Row: NewcomerForm;
-        Insert: Omit<NewcomerForm, "id" | "status" | "created_at"> &
-          Partial<Pick<NewcomerForm, "id" | "status" | "created_at">>;
+        Insert: Omit<NewcomerForm, "id" | "status" | "created_at" | "deleted_at"> &
+          Partial<Pick<NewcomerForm, "id" | "status" | "created_at" | "deleted_at">>;
         Update: Partial<NewcomerForm>;
         Relationships: [];
       };
       prayer_requests: {
         Row: PrayerRequest;
-        Insert: Omit<PrayerRequest, "id" | "status" | "is_anonymous" | "created_at"> &
-          Partial<Pick<PrayerRequest, "id" | "status" | "is_anonymous" | "created_at">>;
+        Insert: Omit<PrayerRequest, "id" | "status" | "is_anonymous" | "created_at" | "deleted_at"> &
+          Partial<Pick<PrayerRequest, "id" | "status" | "is_anonymous" | "created_at" | "deleted_at">>;
         Update: Partial<PrayerRequest>;
         Relationships: [];
       };
       visit_requests: {
         Row: VisitRequest;
-        Insert: Omit<VisitRequest, "id" | "status" | "created_at"> &
-          Partial<Pick<VisitRequest, "id" | "status" | "created_at">>;
+        Insert: Omit<VisitRequest, "id" | "status" | "created_at" | "deleted_at"> &
+          Partial<Pick<VisitRequest, "id" | "status" | "created_at" | "deleted_at">>;
         Update: Partial<VisitRequest>;
         Relationships: [];
       };
@@ -87,15 +87,15 @@ export type Database = {
       };
       hero_slides: {
         Row: HeroSlide;
-        Insert: Omit<HeroSlide, "id" | "display_order" | "is_active" | "created_at"> &
-          Partial<Pick<HeroSlide, "id" | "display_order" | "is_active" | "created_at">>;
+        Insert: Omit<HeroSlide, "id" | "display_order" | "is_active" | "created_at" | "deleted_at"> &
+          Partial<Pick<HeroSlide, "id" | "display_order" | "is_active" | "created_at" | "deleted_at">>;
         Update: Partial<HeroSlide>;
         Relationships: [];
       };
       videos: {
         Row: Video;
-        Insert: Omit<Video, "id" | "category" | "display_order" | "created_at"> &
-          Partial<Pick<Video, "id" | "category" | "display_order" | "created_at">>;
+        Insert: Omit<Video, "id" | "category" | "display_order" | "created_at" | "deleted_at"> &
+          Partial<Pick<Video, "id" | "category" | "display_order" | "created_at" | "deleted_at">>;
         Update: Partial<Video>;
         Relationships: [];
       };
@@ -162,10 +162,12 @@ export type Notice = {
   title: string;
   content: string;
   is_pinned: boolean;
+  is_draft: boolean;
   view_count: number;
   category: NoticeCategory;
   created_at: string;
   updated_at: string;
+  deleted_at: string | null;
 };
 
 export type Sermon = {
@@ -176,7 +178,9 @@ export type Sermon = {
   youtube_id: string;
   summary: string | null;
   sermon_date: string;
+  is_draft: boolean;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type PastoralColumn = {
@@ -185,7 +189,9 @@ export type PastoralColumn = {
   content: string;
   author: string;
   published_date: string;
+  is_draft: boolean;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type Bulletin = {
@@ -194,7 +200,9 @@ export type Bulletin = {
   pdf_url: string;
   thumbnail_url: string | null;
   bulletin_date: string;
+  is_draft: boolean;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type Gallery = {
@@ -204,6 +212,7 @@ export type Gallery = {
   cover_image: string | null;
   event_date: string | null;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type GalleryImage = {
@@ -212,6 +221,7 @@ export type GalleryImage = {
   image_url: string;
   display_order: number;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type Resource = {
@@ -223,6 +233,7 @@ export type Resource = {
   file_size: number | null;
   download_count: number;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type FormStatus = "new" | "contacted" | "completed" | "archived";
@@ -239,6 +250,7 @@ export type NewcomerForm = {
   status: FormStatus;
   admin_memo: string | null;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type PrayerRequest = {
@@ -250,6 +262,7 @@ export type PrayerRequest = {
   status: FormStatus;
   admin_memo: string | null;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type VisitRequest = {
@@ -263,6 +276,7 @@ export type VisitRequest = {
   status: FormStatus;
   admin_memo: string | null;
   created_at: string;
+  deleted_at: string | null;
 };
 
 // site_settings — key별 value 스키마는 SettingValueMap으로 별도 관리
@@ -350,6 +364,7 @@ export type HeroSlide = {
   display_order: number;
   is_active: boolean;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type PageBlockType =
@@ -383,6 +398,7 @@ export type Video = {
   video_date: string;
   display_order: number;
   created_at: string;
+  deleted_at: string | null;
 };
 
 // ── 기부금영수증 신청 (0009_donation_receipts) ──

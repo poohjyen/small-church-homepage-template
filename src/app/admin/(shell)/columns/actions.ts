@@ -30,7 +30,7 @@ export async function createColumn(input: AdminColumnInput): Promise<Result> {
   if (error) return { ok: false, error };
   const { data, error: insertError } = await supabase
     .from("pastoral_columns")
-    .insert(parsed.data)
+    .insert({ ...parsed.data, is_draft: parsed.data.is_draft ?? false })
     .select("id")
     .single();
   if (insertError) return { ok: false, error: insertError.message };
@@ -52,9 +52,18 @@ export async function updateColumn(
   }
   const { supabase, error } = await requireAdmin();
   if (error) return { ok: false, error };
+  const { is_draft, ...rest } = parsed.data;
+  const update: Partial<{
+    title: string;
+    author: string;
+    published_date: string;
+    content: string;
+    is_draft: boolean;
+  }> = { ...rest };
+  if (is_draft !== undefined) update.is_draft = is_draft;
   const { error: updateError } = await supabase
     .from("pastoral_columns")
-    .update(parsed.data)
+    .update(update)
     .eq("id", id);
   if (updateError) return { ok: false, error: updateError.message };
   revalidatePath("/columns");
@@ -68,7 +77,7 @@ export async function deleteColumn(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("pastoral_columns")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/columns");
@@ -89,7 +98,7 @@ export async function bulkDeleteColumns(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("pastoral_columns")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/columns");

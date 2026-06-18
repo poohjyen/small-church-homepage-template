@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -84,10 +85,18 @@ export function ColumnsTable({ data }: { data: PastoralColumn[] }) {
                   <TableCell className="max-w-[520px] px-4 align-top">
                     <Link
                       href={`/admin/columns/${c.id}/edit`}
-                      className="block font-medium text-charcoal hover:text-primary-navy hover:underline"
+                      className="font-medium text-charcoal hover:text-primary-navy hover:underline"
                     >
                       {c.title}
                     </Link>
+                    {c.is_draft ? (
+                      <Badge
+                        variant="outline"
+                        className="ml-2 border-amber-300 bg-amber-50 text-amber-700"
+                      >
+                        초안
+                      </Badge>
+                    ) : null}
                     <p className="mt-1 truncate text-xs text-warm-gray">
                       {previewBody(c.content, 90)}
                     </p>

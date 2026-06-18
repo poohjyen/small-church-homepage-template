@@ -30,6 +30,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
   const { data, error } = await supabase
     .from("hero_slides")
     .select("*")
+    .is("deleted_at", null)
     .order("display_order", { ascending: true });
   if (error) throw error;
   return data ?? [];
@@ -41,6 +42,7 @@ export async function getActiveHeroSlides(): Promise<HeroSlide[]> {
     .from("hero_slides")
     .select("*")
     .eq("is_active", true)
+    .is("deleted_at", null)
     .order("display_order", { ascending: true });
   if (error) throw error;
   return data ?? [];

@@ -5,9 +5,11 @@ import { useForm } from "react-hook-form";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { FileEdit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -35,6 +37,7 @@ export function ColumnForm({ initial }: { initial?: PastoralColumn }) {
       author: initial?.author ?? "",
       published_date: initial?.published_date ?? format(new Date(), "yyyy-MM-dd"),
       content: initial?.content ?? "",
+      is_draft: initial?.is_draft ?? false,
     },
   });
 
@@ -125,6 +128,32 @@ export function ColumnForm({ initial }: { initial?: PastoralColumn }) {
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="is_draft"
+          render={({ field }) => (
+            <FormItem className="rounded-xl bg-soft p-4 ring-1 ring-black/5">
+              <div className="flex items-start gap-3">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value ?? false}
+                    onCheckedChange={(c) => field.onChange(c === true)}
+                  />
+                </FormControl>
+                <div className="-mt-0.5">
+                  <FormLabel className="flex items-center gap-1.5 text-sm font-medium text-charcoal">
+                    <FileEdit className="size-4 text-primary-navy" aria-hidden />
+                    임시저장(초안)
+                  </FormLabel>
+                  <p className="mt-1 text-xs text-warm-gray">
+                    체크하면 초안으로 저장되어 공개 페이지에 노출되지 않습니다.
+                  </p>
+                </div>
+              </div>
             </FormItem>
           )}
         />

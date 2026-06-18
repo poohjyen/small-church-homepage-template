@@ -159,7 +159,7 @@ export async function deleteHeroSlide(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("hero_slides")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/");

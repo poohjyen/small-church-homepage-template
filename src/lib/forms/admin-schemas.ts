@@ -17,6 +17,7 @@ export const adminNoticeSchema = z.object({
   title: trimmedMin("제목", 2).max(200),
   content: trimmedMin("본문", 5).max(20000),
   is_pinned: z.boolean(),
+  is_draft: z.boolean().optional(),
   category: z.enum(NOTICE_CATEGORY_VALUES).default("news"),
 });
 export type AdminNoticeInput = z.infer<typeof adminNoticeSchema>;
@@ -27,6 +28,7 @@ export const adminColumnSchema = z.object({
   author: trimmedMin("작성자").max(50),
   published_date: trimmedMin("발행일"),
   content: trimmedMin("본문", 5).max(20000),
+  is_draft: z.boolean().optional(),
 });
 export type AdminColumnInput = z.infer<typeof adminColumnSchema>;
 

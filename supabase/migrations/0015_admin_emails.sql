@@ -8,10 +8,11 @@
 
 -- 1. site_settings에 admin_emails 시드 (JSONB 배열)
 --    기존 'admin_email'(단수, 알림 수신용)과는 별도의 키
+-- 빈 배열로 시드 — /setup-church(build-seed-sql)가 교회 관리자 이메일로 덮어씁니다.
 insert into public.site_settings (key, value)
 values (
   'admin_emails',
-  '["dream@dreamch.org", "poohjyen@gmail.com"]'::jsonb
+  '[]'::jsonb
 )
 on conflict (key) do nothing;
 
@@ -37,8 +38,8 @@ begin
   where key = 'admin_emails';
 
   if v_emails is null then
-    -- 시드 미적용 등 fallback: 기존 동작 유지
-    return v_email = 'poohjyen@gmail.com';
+    -- 시드 미적용 시: 관리자 없음(안전). admin_emails 시드 후 정상 동작.
+    return false;
   end if;
 
   return v_emails ? v_email;

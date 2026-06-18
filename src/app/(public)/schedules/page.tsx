@@ -21,6 +21,7 @@ export default async function SchedulesPage({ searchParams }: Props) {
     page,
     perPage: PER_PAGE,
     category: "schedule",
+    publishedOnly: true,
   });
 
   return (

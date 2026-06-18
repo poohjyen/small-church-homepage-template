@@ -106,6 +106,10 @@ const upserts = [
 
 if (adminName) upserts.push(["admin_name", jsonbString(adminName)]);
 
+// 관리자 이메일 → admin_emails (is_admin() RPC가 참조; 비면 admin 진입 불가)
+const adminEmail = (basic.adminEmail || "").trim();
+if (adminEmail) upserts.push(["admin_emails", jsonbValue([adminEmail])]);
+
 const sql = `-- 자동 생성됨: build-seed-sql.mjs (${new Date().toISOString()})
 -- setup-church Skill이 mcp__supabase__execute_sql로 실행합니다.
 -- 또는 Supabase Dashboard → SQL Editor에서 직접 실행 가능.

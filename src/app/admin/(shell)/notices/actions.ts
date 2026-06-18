@@ -23,7 +23,7 @@ export async function createNotice(input: AdminNoticeInput): Promise<Result> {
   if (error) return { ok: false, error };
   const { data, error: insertError } = await supabase
     .from("notices")
-    .insert(parsed.data)
+    .insert({ ...parsed.data, is_draft: parsed.data.is_draft ?? false })
     .select("id")
     .single();
   if (insertError) return { ok: false, error: insertError.message };
@@ -40,9 +40,19 @@ export async function updateNotice(id: string, input: AdminNoticeInput): Promise
   }
   const { supabase, error } = await requireAdmin();
   if (error) return { ok: false, error };
+  const { is_draft, ...rest } = parsed.data;
+  const update: Partial<{
+    title: string;
+    content: string;
+    is_pinned: boolean;
+    category: AdminNoticeInput["category"];
+    is_draft: boolean;
+    updated_at: string;
+  }> = { ...rest, updated_at: new Date().toISOString() };
+  if (is_draft !== undefined) update.is_draft = is_draft;
   const { error: updateError } = await supabase
     .from("notices")
-    .update({ ...parsed.data, updated_at: new Date().toISOString() })
+    .update(update)
     .eq("id", id);
   if (updateError) return { ok: false, error: updateError.message };
   revalidatePath("/notices");
@@ -54,7 +64,10 @@ export async function updateNotice(id: string, input: AdminNoticeInput): Promise
 export async function deleteNotice(id: string): Promise<Result> {
   const { supabase, error } = await requireAdmin();
   if (error) return { ok: false, error };
-  const { error: deleteError } = await supabase.from("notices").delete().eq("id", id);
+  const { error: deleteError } = await supabase
+    .from("notices")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/notices");
   revalidatePath("/schedules");
@@ -81,7 +94,7 @@ export async function bulkDeleteNotices(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("notices")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/notices");

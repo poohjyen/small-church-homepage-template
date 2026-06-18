@@ -40,7 +40,7 @@ export function DeleteButton({
         return;
       }
       setOpen(false);
-      toast.success(`${itemLabel} 항목을 삭제했습니다.`);
+      toast.success(`${itemLabel} 항목을 휴지통으로 이동했습니다.`);
       if (redirectTo) {
         router.push(redirectTo);
       } else {
@@ -65,9 +65,10 @@ export function DeleteButton({
       />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>삭제하시겠습니까?</DialogTitle>
+          <DialogTitle>휴지통으로 이동할까요?</DialogTitle>
           <DialogDescription>
-            「{itemLabel}」 항목이 영구히 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
+            「{itemLabel}」 항목이 휴지통으로 이동합니다. 14일 동안 보관되며,
+            휴지통에서 언제든 복원할 수 있습니다.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -6,15 +6,10 @@
 --       이후 admin > 설정 > SNS 에서 수정하면 이 값을 덮어씁니다.
 -- ============================================
 
+-- 빈 SNS 시드 — /setup-church(build-seed-sql) 또는 admin > 설정 > SNS에서 채웁니다.
 insert into public.site_settings (key, value)
 values (
   'sns',
-  jsonb_build_object(
-    'band',      'https://band.us/@dreamch',
-    'youtube',   'https://www.youtube.com/@church_dream',
-    'instagram', 'https://www.instagram.com/dj.dreamch/'
-  )
+  jsonb_build_object('band', '', 'youtube', '', 'instagram', '')
 )
-on conflict (key) do update
-set value = excluded.value,
-    updated_at = now();
+on conflict (key) do nothing;

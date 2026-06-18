@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Pencil, Eye, EyeOff } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -17,14 +20,35 @@ import { DeleteButton } from "@/components/admin/DeleteButton";
 import { BulkActionBar } from "@/components/admin/BulkActionBar";
 import { youtubeThumb } from "@/lib/data/helpers";
 import type { Sermon } from "@/types/database";
-import { bulkDeleteSermons, deleteSermon } from "./actions";
+import {
+  bulkDeleteSermons,
+  deleteSermon,
+  publishSermon,
+  unpublishSermon,
+} from "./actions";
 
 const FORM_ID = "admin-sermons-bulk";
 
 export function SermonsTable({ data }: { data: Sermon[] }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [pending, startTransition] = useTransition();
   const allChecked = data.length > 0 && selected.size === data.length;
   const someChecked = selected.size > 0 && selected.size < data.length;
+
+  function onToggleDraft(s: Sermon) {
+    startTransition(async () => {
+      const res = s.is_draft
+        ? await publishSermon(s.id)
+        : await unpublishSermon(s.id);
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(s.is_draft ? "공개되었습니다." : "초안으로 전환했습니다.");
+      router.refresh();
+    });
+  }
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -92,10 +116,18 @@ export function SermonsTable({ data }: { data: Sermon[] }) {
                   <TableCell className="max-w-[420px] px-4 align-top">
                     <Link
                       href={`/admin/sermons/${s.id}/edit`}
-                      className="block font-medium text-charcoal hover:text-primary-navy hover:underline"
+                      className="font-medium text-charcoal hover:text-primary-navy hover:underline"
                     >
                       {s.title}
                     </Link>
+                    {s.is_draft ? (
+                      <Badge
+                        variant="outline"
+                        className="ml-2 border-amber-300 bg-amber-50 text-amber-700"
+                      >
+                        초안
+                      </Badge>
+                    ) : null}
                     <p className="mt-1 text-xs text-warm-gray">
                       {s.scripture} · {s.preacher}
                     </p>
@@ -105,6 +137,24 @@ export function SermonsTable({ data }: { data: Sermon[] }) {
                   </TableCell>
                   <TableCell className="px-4 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-warm-gray hover:text-primary-navy"
+                        disabled={pending}
+                        onClick={() => onToggleDraft(s)}
+                        title={s.is_draft ? "공개로 전환" : "초안으로 전환"}
+                      >
+                        {s.is_draft ? (
+                          <Eye className="size-4" aria-hidden />
+                        ) : (
+                          <EyeOff className="size-4" aria-hidden />
+                        )}
+                        <span className="sr-only">
+                          {s.is_draft ? "공개로 전환" : "초안으로 전환"}
+                        </span>
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon-sm"

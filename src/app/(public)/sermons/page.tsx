@@ -19,7 +19,11 @@ type Props = {
 export default async function SermonsPage({ searchParams }: Props) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const { data, total } = await getSermons({ page, perPage: PER_PAGE });
+  const { data, total } = await getSermons({
+    page,
+    perPage: PER_PAGE,
+    publishedOnly: true,
+  });
 
   return (
     <>

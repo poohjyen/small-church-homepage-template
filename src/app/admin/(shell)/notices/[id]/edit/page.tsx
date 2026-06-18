@@ -11,7 +11,7 @@ export default async function EditNoticePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const notice = await getNoticeById(id);
+  const notice = await getNoticeById(id, { publishedOnly: false });
   if (!notice) notFound();
 
   const isSchedule = notice.category === "schedule";

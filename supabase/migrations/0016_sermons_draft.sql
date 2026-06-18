@@ -16,11 +16,11 @@ create index if not exists idx_sermons_is_draft_date
 insert into public.site_settings (key, value)
 values (
   'youtube_sermon_sync',
-  '{"playlist_id": "", "default_preacher": "박명호 목사"}'::jsonb
+  '{"playlist_id": "", "default_preacher": ""}'::jsonb
 )
 on conflict (key) do nothing;
 
--- 3. 대시보드 인사말에 사용할 관리자 이름
+-- 3. 대시보드/표기용 관리자 이름 (빈 시드 — setup가 담임목사명으로 채움)
 insert into public.site_settings (key, value)
-values ('admin_name', '"박명호"'::jsonb)
+values ('admin_name', '""'::jsonb)
 on conflict (key) do nothing;

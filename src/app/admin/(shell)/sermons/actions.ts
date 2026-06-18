@@ -91,7 +91,7 @@ export async function deleteSermon(id: string): Promise<Result> {
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("sermons")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/sermons");
@@ -112,10 +112,40 @@ export async function bulkDeleteSermons(
   if (error) return { ok: false, error };
   const { error: deleteError } = await supabase
     .from("sermons")
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .in("id", ids);
   if (deleteError) return { ok: false, error: deleteError.message };
   revalidatePath("/sermons");
   revalidatePath("/admin/sermons");
   return { ok: true, deleted: ids.length };
+}
+
+export async function publishSermon(id: string): Promise<Result> {
+  const { supabase, error } = await requireAdmin();
+  if (error) return { ok: false, error };
+  const { error: updateError } = await supabase
+    .from("sermons")
+    .update({ is_draft: false })
+    .eq("id", id);
+  if (updateError) return { ok: false, error: updateError.message };
+  revalidatePath("/sermons");
+  revalidatePath(`/sermons/${id}`);
+  revalidatePath("/admin/sermons");
+  revalidatePath("/admin");
+  return { ok: true, id };
+}
+
+export async function unpublishSermon(id: string): Promise<Result> {
+  const { supabase, error } = await requireAdmin();
+  if (error) return { ok: false, error };
+  const { error: updateError } = await supabase
+    .from("sermons")
+    .update({ is_draft: true })
+    .eq("id", id);
+  if (updateError) return { ok: false, error: updateError.message };
+  revalidatePath("/sermons");
+  revalidatePath(`/sermons/${id}`);
+  revalidatePath("/admin/sermons");
+  revalidatePath("/admin");
+  return { ok: true, id };
 }

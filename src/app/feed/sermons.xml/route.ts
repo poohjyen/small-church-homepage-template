@@ -5,7 +5,11 @@ import { buildRss, rssResponse } from "@/lib/rss";
 export const revalidate = 300;
 
 export async function GET() {
-  const { data } = await getSermons({ page: 1, perPage: 50 }).catch(() => ({
+  const { data } = await getSermons({
+    page: 1,
+    perPage: 50,
+    publishedOnly: true,
+  }).catch(() => ({
     data: [],
     total: 0,
   }));

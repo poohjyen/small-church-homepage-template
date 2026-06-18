@@ -20,7 +20,8 @@ export async function getGalleries({
   const start = (page - 1) * perPage;
   let query = supabase
     .from("galleries")
-    .select("*", { count: "exact" });
+    .select("*", { count: "exact" })
+    .is("deleted_at", null);
   if (category && category !== "전체") {
     query = query.eq("category", category);
   }
@@ -41,6 +42,7 @@ export async function getRecentGalleries(limit = 4): Promise<Gallery[]> {
   const { data, error } = await supabase
     .from("galleries")
     .select("*")
+    .is("deleted_at", null)
     .order("event_date", { ascending: false, nullsFirst: false })
     .limit(limit);
   if (error) throw error;
@@ -53,6 +55,7 @@ export async function getGalleryById(id: string): Promise<Gallery | null> {
     .from("galleries")
     .select("*")
     .eq("id", id)
+    .is("deleted_at", null)
     .maybeSingle();
   if (error) throw error;
   return data;
@@ -64,6 +67,7 @@ export async function getGalleryImages(galleryId: string): Promise<GalleryImage[
     .from("gallery_images")
     .select("*")
     .eq("gallery_id", galleryId)
+    .is("deleted_at", null)
     .order("display_order", { ascending: true });
   if (error) throw error;
   return data ?? [];
@@ -86,6 +90,7 @@ export async function getAdjacentGallery(
       .select("id,title")
       .lt(sortColumn, sortKey)
       .neq("id", currentId)
+      .is("deleted_at", null)
       .order(sortColumn, { ascending: false })
       .limit(1)
       .maybeSingle(),
@@ -94,6 +99,7 @@ export async function getAdjacentGallery(
       .select("id,title")
       .gt(sortColumn, sortKey)
       .neq("id", currentId)
+      .is("deleted_at", null)
       .order(sortColumn, { ascending: true })
       .limit(1)
       .maybeSingle(),

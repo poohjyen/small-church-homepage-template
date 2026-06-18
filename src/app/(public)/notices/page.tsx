@@ -21,6 +21,7 @@ export default async function NoticesPage({ searchParams }: Props) {
     page,
     perPage: PER_PAGE,
     category: "news",
+    publishedOnly: true,
   });
 
   return (

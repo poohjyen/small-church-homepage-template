@@ -10,7 +10,10 @@ export async function getVideos({
 }: { page?: number; perPage?: number; search?: string } = {}): Promise<VideosPage> {
   const supabase = await createClient();
   const start = (page - 1) * perPage;
-  let q = supabase.from("videos").select("*", { count: "exact" });
+  let q = supabase
+    .from("videos")
+    .select("*", { count: "exact" })
+    .is("deleted_at", null);
   if (search?.trim()) {
     const t = search.trim();
     q = q.or(`title.ilike.%${t}%,performer.ilike.%${t}%,description.ilike.%${t}%`);
@@ -29,6 +32,7 @@ export async function getRecentVideos(limit = 4): Promise<Video[]> {
   const { data, error } = await supabase
     .from("videos")
     .select("*")
+    .is("deleted_at", null)
     .order("video_date", { ascending: false })
     .limit(limit);
   if (error) throw error;
@@ -41,6 +45,7 @@ export async function getVideoById(id: string): Promise<Video | null> {
     .from("videos")
     .select("*")
     .eq("id", id)
+    .is("deleted_at", null)
     .maybeSingle();
   if (error) throw error;
   return data;
@@ -60,6 +65,7 @@ export async function getAdjacentVideo(
       .select("id,title")
       .lt("video_date", videoDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
       .order("video_date", { ascending: false })
       .limit(1)
       .maybeSingle(),
@@ -68,6 +74,7 @@ export async function getAdjacentVideo(
       .select("id,title")
       .gt("video_date", videoDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
       .order("video_date", { ascending: true })
       .limit(1)
       .maybeSingle(),

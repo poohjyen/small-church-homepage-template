@@ -7,10 +7,23 @@ export async function getColumns({
   page = 1,
   perPage = 10,
   search,
-}: { page?: number; perPage?: number; search?: string } = {}): Promise<ColumnsPage> {
+  publishedOnly = false,
+  draftOnly = false,
+}: {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  publishedOnly?: boolean;
+  draftOnly?: boolean;
+} = {}): Promise<ColumnsPage> {
   const supabase = await createClient();
   const start = (page - 1) * perPage;
-  let q = supabase.from("pastoral_columns").select("*", { count: "exact" });
+  let q = supabase
+    .from("pastoral_columns")
+    .select("*", { count: "exact" })
+    .is("deleted_at", null);
+  if (draftOnly) q = q.eq("is_draft", true);
+  else if (publishedOnly) q = q.eq("is_draft", false);
   if (search?.trim()) {
     const t = search.trim();
     q = q.or(`title.ilike.%${t}%,author.ilike.%${t}%,content.ilike.%${t}%`);
@@ -23,13 +36,19 @@ export async function getColumns({
   return { data: data ?? [], total: count ?? 0 };
 }
 
-export async function getColumnById(id: string): Promise<PastoralColumn | null> {
+export async function getColumnById(
+  id: string,
+  opts: { publishedOnly?: boolean } = {},
+): Promise<PastoralColumn | null> {
+  const { publishedOnly = true } = opts;
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let q = supabase
     .from("pastoral_columns")
     .select("*")
     .eq("id", id)
-    .maybeSingle();
+    .is("deleted_at", null);
+  if (publishedOnly) q = q.eq("is_draft", false);
+  const { data, error } = await q.maybeSingle();
   if (error) throw error;
   return data;
 }
@@ -48,6 +67,8 @@ export async function getAdjacentColumn(
       .select("id,title")
       .lt("published_date", publishedDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
+      .eq("is_draft", false)
       .order("published_date", { ascending: false })
       .limit(1)
       .maybeSingle(),
@@ -56,6 +77,8 @@ export async function getAdjacentColumn(
       .select("id,title")
       .gt("published_date", publishedDate)
       .neq("id", currentId)
+      .is("deleted_at", null)
+      .eq("is_draft", false)
       .order("published_date", { ascending: true })
       .limit(1)
       .maybeSingle(),
