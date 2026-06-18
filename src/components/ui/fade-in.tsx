@@ -13,7 +13,7 @@ type Props = {
   className?: string;
 };
 
-// 매화풍 등장: 24px 사뿐히 떠오름(up) + 살짝 확대(zoom). 거리/이징/지속은 아래 className 한 곳에서 조절
+// 부드러운 등장: 24px 사뿐히 떠오름(up) + 살짝 확대(zoom). 거리/이징/지속은 아래 className 한 곳에서 조절
 const HIDDEN: Record<Direction, string> = {
   up: "opacity-0 translate-y-6",
   down: "opacity-0 -translate-y-6",

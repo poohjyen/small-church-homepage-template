@@ -156,7 +156,7 @@ export function YearMottoSection({
             id="ym_scripture"
             value={scripture}
             onChange={(e) => setScripture(e.target.value)}
-            placeholder="예: 빌립보서 2:2-4"
+            placeholder="예: 요한복음 3:16"
           />
         </div>
         <div className="space-y-2">

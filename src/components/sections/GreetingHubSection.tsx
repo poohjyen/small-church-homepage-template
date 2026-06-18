@@ -18,7 +18,7 @@ type HubItem = {
   schedule?: { label: string; time: string }[];
   href: string;
   accent: Accent;
-  /* 매화풍 스태거: 카드별 배경 톤 + lg 높이 오프셋 */
+  /* 스태거 등장: 카드별 배경 톤 + lg 높이 오프셋 */
   tone: string;
   offset: string;
 };

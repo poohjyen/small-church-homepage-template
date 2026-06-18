@@ -109,7 +109,7 @@ export function SermonForm({ initial }: { initial?: Sermon }) {
               <FormItem>
                 <FormLabel>본문 성경</FormLabel>
                 <FormControl>
-                  <Input placeholder="예: 빌립보서 2:2-4" {...field} />
+                  <Input placeholder="예: 요한복음 3:16" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

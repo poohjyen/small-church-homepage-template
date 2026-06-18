@@ -389,7 +389,7 @@ function BlockForm({
               id="b_quote_source"
               value={imageAlt}
               onChange={(e) => setImageAlt(e.target.value)}
-              placeholder="예: 빌립보서 2:2"
+              placeholder="예: 요한복음 3:16"
             />
           </div>
         </div>
@@ -477,7 +477,7 @@ function BlockForm({
               id="b_alt"
               value={imageAlt}
               onChange={(e) => setImageAlt(e.target.value)}
-              placeholder="예: 필리핀 단기선교 단체사진"
+              placeholder="예: 행사 단체사진"
             />
           </div>
         </div>

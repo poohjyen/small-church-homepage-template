@@ -30,7 +30,7 @@ const PARALLAX_BANDS = new Set<LandingSectionKey>([
   "online-giving",
 ]);
 
-// 매화풍 등장 다양화 — 풀폭 밴드는 zoom, 내부에 stagger/교차가 있는 섹션은
+// 섹션 등장 다양화 — 풀폭 밴드는 zoom, 내부에 stagger/교차가 있는 섹션은
 // 외부 래퍼를 순수 fade(none)로 두어 이중 transform을 피한다.
 const SECTION_DIRECTION: Record<LandingSectionKey, Direction> = {
   greeting: "none",

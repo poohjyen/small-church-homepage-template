@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function HeroCarousel({ slides, ctaHref, ctaLabel }: Props) {
-  // 매화 패턴: 디졸브(Fade), 자동전환 X (좌우 버튼 클릭으로만), duration 길게
+  // 디졸브 전환(Fade), 자동전환 X (좌우 버튼 클릭으로만), duration 길게
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: slides.length > 1, duration: 80 },
     [Fade()],
