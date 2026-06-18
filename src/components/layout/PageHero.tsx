@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
 
+import { FadeIn } from "@/components/ui/fade-in";
 import { cn } from "@/lib/utils";
 
 type Crumb = { label: string; href?: string };
@@ -34,9 +36,10 @@ export function PageHero({
     return (
       <section
         aria-label={title}
-        className="relative w-full overflow-hidden border-b border-slate-200 bg-slate-50"
+        className="relative w-full overflow-hidden border-b border-slate-200 bg-gradient-to-b from-soft via-soft to-canvas"
       >
-        <div
+        <FadeIn
+          direction="down"
           className={cn(
             "container mx-auto flex flex-col gap-2 px-4 py-8 md:gap-3 md:py-12",
             align === "center" ? "items-center text-center" : "items-start text-left",
@@ -46,31 +49,51 @@ export function PageHero({
             <nav aria-label="페이지 위치">
               <ol
                 className={cn(
-                  "flex flex-wrap items-center gap-x-2 text-xs text-warm-gray md:text-sm",
+                  "flex flex-wrap items-center gap-1 text-xs text-warm-gray md:text-[13px]",
                   align === "center" ? "justify-center" : "justify-start",
                 )}
               >
                 <li>
-                  <Link href="/" className="hover:text-primary-navy">
-                    홈
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-1 underline-offset-4 transition hover:text-primary-navy hover:underline"
+                  >
+                    <Home className="size-3.5" aria-hidden />
+                    <span>홈</span>
                   </Link>
                 </li>
-                {breadcrumb.map((c, i) => (
-                  <li key={`${c.label}-${i}`} className="flex items-center gap-x-2">
-                    <span aria-hidden className="text-slate-300">
-                      ·
-                    </span>
-                    {c.href ? (
-                      <Link href={c.href} className="hover:text-primary-navy">
-                        {c.label}
-                      </Link>
-                    ) : (
-                      <span className="text-primary-navy" aria-current="page">
-                        {c.label}
-                      </span>
-                    )}
-                  </li>
-                ))}
+                {breadcrumb.map((c, i) => {
+                  const isLast = i === breadcrumb.length - 1;
+                  return (
+                    <li
+                      key={`${c.label}-${i}`}
+                      className="flex items-center gap-1"
+                    >
+                      <ChevronRight
+                        className="size-3 text-slate-300"
+                        aria-hidden
+                      />
+                      {c.href ? (
+                        <Link
+                          href={c.href}
+                          className="underline-offset-4 transition hover:text-primary-navy hover:underline"
+                        >
+                          {c.label}
+                        </Link>
+                      ) : (
+                        <span
+                          className={cn(
+                            "text-primary-navy",
+                            isLast && "font-semibold",
+                          )}
+                          aria-current="page"
+                        >
+                          {c.label}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ol>
             </nav>
           ) : null}
@@ -79,7 +102,7 @@ export function PageHero({
             {eyebrow}
           </p>
 
-          <h1 className="text-3xl font-bold leading-tight text-primary-navy md:text-5xl">
+          <h1 className="text-2xl font-bold leading-tight text-primary-navy md:text-4xl">
             {title}
           </h1>
 
@@ -105,7 +128,7 @@ export function PageHero({
               {description}
             </p>
           ) : null}
-        </div>
+        </FadeIn>
       </section>
     );
   }
@@ -127,7 +150,7 @@ export function PageHero({
         <>
           <Image
             src={image}
-            alt={imageAlt ?? ""}
+            alt={imageAlt ?? title}
             fill
             sizes="100vw"
             preload
@@ -151,7 +174,8 @@ export function PageHero({
           alignClass,
         )}
       >
-        <div
+        <FadeIn
+          direction="down"
           className={cn(
             "container mx-auto flex w-full flex-col gap-3",
             align === "center" ? "items-center" : "items-start",
@@ -161,31 +185,51 @@ export function PageHero({
             <nav aria-label="페이지 위치">
               <ol
                 className={cn(
-                  "flex flex-wrap items-center gap-x-2 text-xs text-white/75 md:text-sm",
+                  "flex flex-wrap items-center gap-1 text-xs text-white/75 md:text-[13px]",
                   align === "center" ? "justify-center" : "justify-start",
                 )}
               >
                 <li>
-                  <Link href="/" className="hover:text-white">
-                    홈
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-1 underline-offset-4 transition hover:text-white hover:underline"
+                  >
+                    <Home className="size-3.5" aria-hidden />
+                    <span>홈</span>
                   </Link>
                 </li>
-                {breadcrumb.map((c, i) => (
-                  <li key={`${c.label}-${i}`} className="flex items-center gap-x-2">
-                    <span aria-hidden className="text-white/40">
-                      ·
-                    </span>
-                    {c.href ? (
-                      <Link href={c.href} className="hover:text-white">
-                        {c.label}
-                      </Link>
-                    ) : (
-                      <span className="text-white" aria-current="page">
-                        {c.label}
-                      </span>
-                    )}
-                  </li>
-                ))}
+                {breadcrumb.map((c, i) => {
+                  const isLast = i === breadcrumb.length - 1;
+                  return (
+                    <li
+                      key={`${c.label}-${i}`}
+                      className="flex items-center gap-1"
+                    >
+                      <ChevronRight
+                        className="size-3 text-white/40"
+                        aria-hidden
+                      />
+                      {c.href ? (
+                        <Link
+                          href={c.href}
+                          className="underline-offset-4 transition hover:text-white hover:underline"
+                        >
+                          {c.label}
+                        </Link>
+                      ) : (
+                        <span
+                          className={cn(
+                            "text-white",
+                            isLast && "font-semibold",
+                          )}
+                          aria-current="page"
+                        >
+                          {c.label}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ol>
             </nav>
           ) : null}
@@ -194,7 +238,7 @@ export function PageHero({
             {eyebrow}
           </p>
 
-          <h1 className="text-3xl font-bold leading-tight text-white md:text-5xl [text-shadow:_0_2px_12px_rgba(0,0,0,0.45)]">
+          <h1 className="text-2xl font-bold leading-tight text-white md:text-4xl [text-shadow:_0_2px_12px_rgba(0,0,0,0.45)]">
             {title}
           </h1>
 
@@ -220,7 +264,7 @@ export function PageHero({
               {description}
             </p>
           ) : null}
-        </div>
+        </FadeIn>
       </div>
     </section>
   );

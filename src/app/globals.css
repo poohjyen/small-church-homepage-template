@@ -53,17 +53,24 @@
   --color-secondary-sky: #0c9fa5;
   --color-accent-coral: #FF9084;
   --color-accent-amber: #F5A623;
-  --color-soft: #FFFFFF;
+  --color-soft: #F8FAFB;
+
+  /* canvas: cool sky 톤 (#F0F7FA) */
+  --color-canvas: #F0F7FA;
+
+  /* tone-beige: navy/sky 정체성 보존하면서 매우 옅은 따뜻한 톤 (MissionCard 등 1~2 섹션 한정) */
+  --color-tone-beige: #FAF7F2;
+
   --color-charcoal: #222222;
   --color-warm-gray: #6B6B6B;
 
-  /* 시니어 가독성 — 본문 17px 기본, line-height 1.85 (한국어 가독성) */
-  --text-base: 1.0625rem;
-  --text-base--line-height: 1.85;
-  --text-lg: 1.1875rem;
-  --text-lg--line-height: 1.85;
-  --text-xl: 1.375rem;
-  --text-xl--line-height: 1.7;
+  /* 본문 16px, line-height 1.75 */
+  --text-base: 1rem;
+  --text-base--line-height: 1.75;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.6;
 }
 
 :root {
@@ -144,11 +151,22 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   h1, h2, h3, h4 {
     font-weight: 700;
     letter-spacing: -0.01em;
   }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* 공개 영역 카드 표면 단일 컨벤션: 미색 + 헤어라인 (직각) */
+@utility surface-card {
+  @apply bg-soft ring-1 ring-black/5;
 }
 
 @layer utilities {
@@ -163,6 +181,44 @@
     animation: ken-burns 16s ease-in-out infinite alternate;
     transform-origin: center;
   }
+}
+
+/* tiptap rich-text 출력 + 어드민 에디터 미리보기 공용 스타일 */
+.rich-text h1 {
+  @apply mt-6 mb-3 text-2xl font-bold text-primary-navy md:text-3xl;
+}
+.rich-text h2 {
+  @apply mt-5 mb-2 text-xl font-bold text-primary-navy md:text-2xl;
+}
+.rich-text h3 {
+  @apply mt-4 mb-2 text-lg font-bold text-primary-navy md:text-xl;
+}
+.rich-text p {
+  @apply leading-loose;
+}
+.rich-text strong {
+  @apply font-bold;
+}
+.rich-text em {
+  @apply italic;
+}
+.rich-text u {
+  @apply underline underline-offset-2;
+}
+.rich-text ul {
+  @apply my-3 list-disc pl-6;
+}
+.rich-text ol {
+  @apply my-3 list-decimal pl-6;
+}
+.rich-text li {
+  @apply my-1;
+}
+.rich-text a {
+  @apply text-secondary-sky underline underline-offset-2;
+}
+.rich-text blockquote {
+  @apply my-4 border-l-4 border-primary-navy/30 bg-slate-50 py-2 pl-4 italic text-warm-gray;
 }
 
 @keyframes ken-burns {

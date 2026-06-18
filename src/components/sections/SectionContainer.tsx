@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type Bg = "white" | "gray" | "teal" | "navy";
+type Bg = "white" | "plain" | "soft" | "gray" | "teal" | "navy";
 
 type Props = {
   children: React.ReactNode;
@@ -12,7 +12,9 @@ type Props = {
 };
 
 const bgClasses: Record<Bg, string> = {
-  white: "bg-white",
+  white: "bg-canvas",
+  plain: "bg-white",
+  soft: "bg-soft",
   gray: "bg-slate-50",
   teal: "bg-secondary-sky text-white",
   navy: "bg-primary-navy text-white",
@@ -29,7 +31,7 @@ export function SectionContainer({
   return (
     <section
       id={id}
-      className={cn("py-10 md:py-16", bgClasses[bg], className)}
+      className={cn("py-4 md:py-6", bgClasses[bg], className)}
     >
       {fullBleed ? (
         children

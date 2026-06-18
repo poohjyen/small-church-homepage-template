@@ -1,123 +1,99 @@
-import { CreditCard, HandHeart, Info } from "lucide-react";
+import { CreditCard } from "lucide-react";
 
+import { ParallaxBackdrop } from "@/components/sections/ParallaxBackdrop";
 import { SectionHeading } from "@/components/ui/section-heading";
 import type { OfferingAccountItem } from "@/types/database";
-import { CHURCH } from "../../../church.config";
 
-import { SectionContainer } from "./SectionContainer";
+type Props = { accounts: OfferingAccountItem[]; bgImage?: string };
 
-type Props = { accounts?: OfferingAccountItem[] };
+export function OnlineGivingSection({ accounts, bgImage }: Props) {
+  const multi = accounts.length > 1;
 
-export function OnlineGivingSection({ accounts }: Props = {}) {
-  const items = accounts ?? [];
-  if (items.length === 0) return null;
-  return (
-    <SectionContainer bg="white" id="offering">
-      <SectionHeading eyebrow="OFFERING" title="온라인 헌금" />
+  // 데스크톱 풀폭 밴드 내부 (배경만 사진/단색으로 갈아끼움)
+  const deskInner = (
+    <div className="container mx-auto px-4">
+      <SectionHeading eyebrow="OFFERING" title="온라인 헌금" tone="dark" />
 
-      <div className="mx-auto mt-6 max-w-4xl md:mt-12">
-        <div className="overflow-hidden rounded-2xl bg-primary-navy text-white shadow-xl md:rounded-3xl">
-          {/* 모바일: 한 박스에 3개 계좌 컴팩트 정렬 */}
-          <div className="flex flex-col gap-3 px-5 py-5 md:hidden">
-            <div className="flex items-start gap-3">
-              <CreditCard
-                className="mt-0.5 size-5 shrink-0 text-secondary-sky"
-                strokeWidth={1.5}
-                aria-hidden
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">
-                  Account
+      <ul className="mx-auto mt-6 flex max-w-5xl flex-col gap-4 md:flex-row md:justify-center">
+        {accounts.map((a) => (
+          <li
+            key={a.dept}
+            className="flex items-start gap-3 border border-white/15 bg-white/5 px-5 py-4 md:max-w-sm md:flex-1"
+          >
+            <CreditCard
+              className="mt-0.5 size-5 shrink-0 text-secondary-sky"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+            <div className="min-w-0 flex-1">
+              {multi && (
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-white/50">
+                  {a.dept}
                 </p>
-                <ul className="mt-1.5 space-y-1">
-                  {items.map((a) => (
-                    <li
-                      key={a.dept}
-                      className="break-keep text-sm font-bold leading-snug"
-                    >
-                      {a.dept}
-                      <span className="ml-1 font-semibold text-white/85">
-                        ({a.account})
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <p className="text-[11px] leading-relaxed text-white/80">
-              헌금 종류와 성함을 함께 적어주세요. 예){" "}
-              <span className="font-semibold text-white">감사_홍길동</span>
-            </p>
-          </div>
-
-          {/* 데스크톱: 좌 하트 + 우 3계좌 안내 */}
-          <div className="hidden md:grid md:grid-cols-[1fr_1.4fr]">
-            <div className="flex flex-col items-center justify-center bg-secondary-sky/95 px-8 py-10 text-center md:py-14">
-              <HandHeart
-                className="size-14 text-white"
-                strokeWidth={1.5}
-                aria-hidden
-              />
-              <p className="mt-5 text-lg font-bold md:text-xl">
-                {CHURCH.name} 헌금 계좌
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-white/85 md:text-base">
-                온라인뱅킹 · 모바일뱅킹으로
-                <br />
-                간편하게 드릴 수 있습니다
+              )}
+              <p className="break-keep text-base font-medium leading-snug md:text-lg">
+                {a.account}
               </p>
             </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 text-center text-xs text-white/70">
+        헌금 종류와 성함을 함께 적어주세요. 예){" "}
+        <span className="font-semibold text-white">감사_홍길동</span>
+      </p>
+    </div>
+  );
 
-            <div className="px-8 py-10 md:px-12 md:py-14">
-              <div className="flex items-start gap-4">
+  return (
+    <section id="offering" aria-label="온라인 헌금">
+      {/* 모바일 — 흰 배경, 가로로 긴 막대형 계좌 (위→아래) */}
+      <div className="bg-canvas py-4 md:hidden">
+        <div className="container mx-auto px-4">
+          <SectionHeading eyebrow="OFFERING" title="온라인 헌금" />
+          <ul className="mx-auto mt-4 flex max-w-2xl flex-col gap-2">
+            {accounts.map((a) => (
+              <li
+                key={a.dept}
+                className="flex items-center gap-3 overflow-hidden bg-primary-navy px-4 py-3 text-white shadow-md"
+              >
                 <CreditCard
-                  className="mt-1 size-7 shrink-0 text-secondary-sky"
+                  className="size-5 shrink-0 text-secondary-sky"
                   strokeWidth={1.5}
                   aria-hidden
                 />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-                    Account
-                  </p>
-                  <ul className="mt-2 space-y-1.5">
-                    {items.map((a) => (
-                      <li
-                        key={a.dept}
-                        className="break-keep text-base font-bold leading-snug md:text-lg"
-                      >
-                        {a.dept}
-                        <span className="ml-2 font-semibold text-white/85">
-                          ({a.account})
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-6 flex items-start gap-3 rounded-2xl bg-white/10 p-5 ring-1 ring-white/15">
-                <Info
-                  className="mt-0.5 size-5 shrink-0 text-white/80"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-                <div className="text-sm leading-relaxed text-white/90 md:text-base">
-                  <p className="font-semibold">입금자명 안내</p>
-                  <p className="mt-1 text-white/80">
-                    헌금 종류와 성함을 함께 적어주세요. <br />
-                    예){" "}
-                    <span className="font-semibold text-white">감사_홍길동</span>
-                    {" · "}
-                    <span className="font-semibold text-white">십일조_홍길동</span>
-                    {" · "}
-                    <span className="font-semibold text-white">선교_홍길동</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+                {multi && (
+                  <span className="shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-white/80">
+                    {a.dept}
+                  </span>
+                )}
+                <span className="break-keep text-[15px] font-medium leading-snug">
+                  {a.account}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mx-auto mt-2 max-w-2xl text-[11px] leading-relaxed text-warm-gray">
+            헌금 종류와 성함을 함께 적어주세요. 예){" "}
+            <span className="font-semibold text-primary-navy">감사_홍길동</span>
+          </p>
         </div>
       </div>
-    </SectionContainer>
+
+      {/* 데스크톱 — 풀 블리드 밴드 (사진 배경 + 네이비 오버레이 패럴럭스, 모바일엔 미표시) */}
+      {bgImage ? (
+        <ParallaxBackdrop
+          image={bgImage}
+          overlayClassName="bg-primary-navy/88"
+          className="hidden md:block"
+        >
+          <div className="py-6 text-white md:py-10">{deskInner}</div>
+        </ParallaxBackdrop>
+      ) : (
+        <div className="hidden bg-primary-navy py-6 text-white md:block md:py-10">
+          {deskInner}
+        </div>
+      )}
+    </section>
   );
 }

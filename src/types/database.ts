@@ -260,6 +260,22 @@ export type OfferingAccountItem = {
   account: string;
 };
 
+export type MissionsCardValue = {
+  image_url: string;
+  title: string;
+  body: string;
+  cta_label: string;
+  cta_href: string;
+};
+
+export type ParallaxBandValue = {
+  image: string;
+  headline: string;
+  subtitle: string;
+  cta_label: string;
+  cta_href: string;
+};
+
 export type SettingValueMap = {
   year_motto: { year: number; motto: string; scripture: string; body: string };
   vision_three: { v1: string; v2: string; v3: string };
@@ -273,6 +289,19 @@ export type SettingValueMap = {
   offering_accounts: { items: OfferingAccountItem[] };
   admin_name: string;
   landing_sections: { items: { key: string; visible: boolean }[] };
+  vision_image_url: string;
+  missions_card: MissionsCardValue;
+  parallax_bands: Record<
+    | "home"
+    | "about"
+    | "vision"
+    | "worship"
+    | "location"
+    // 홈 색상 띠를 사진 배경 패럴럭스로 전환할 때 쓰는 배경 사진 (이미지만 사용, 문구는 섹션에 내장)
+    | "home_invite"
+    | "home_giving",
+    ParallaxBandValue
+  >;
 };
 
 export type HeroSlide = {

@@ -11,7 +11,6 @@ const moreLinkVariants = cva(
         navy: "text-primary-navy hover:text-primary-navy/80",
         white: "text-white hover:text-white/85",
         teal: "text-secondary-sky hover:text-secondary-sky/80",
-        coral: "text-accent-coral hover:text-accent-coral/80",
       },
       size: {
         sm: "text-sm",

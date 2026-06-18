@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 
+import { FadeIn } from "@/components/ui/fade-in";
 import { MoreLink } from "@/components/ui/more-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import type { Sermon } from "@/types/database";
@@ -13,23 +14,29 @@ type Props = { sermon: Sermon | null };
 export function FeaturedSermonSection({ sermon }: Props) {
   if (!sermon) {
     return (
-      <SectionContainer bg="gray">
-        <SectionHeading eyebrow="FEATURED SERMON" title="이번 주 말씀" />
-        <div className="mt-8 rounded-2xl bg-white p-12 text-center text-warm-gray ring-1 ring-black/5">
+      <SectionContainer bg="plain" className="py-6 md:py-12">
+        <FadeIn direction="down">
+          <SectionHeading eyebrow="FEATURED SERMON" title="이번 주 말씀" />
+        </FadeIn>
+        <div className="mt-8 border border-black/5 bg-soft p-12 text-center text-warm-gray ring-1 ring-black/5">
           아직 등록된 설교가 없습니다.
           <br className="hidden md:block" />
-          <span className="text-sm">관리자 페이지(/admin/sermons)에서 설교를 등록해 주세요.</span>
+          <span className="text-sm">
+            관리자 페이지(/admin/sermons)에서 설교를 등록해 주세요.
+          </span>
         </div>
       </SectionContainer>
     );
   }
   return (
-    <SectionContainer bg="gray">
-      <SectionHeading eyebrow="FEATURED SERMON" title="이번 주 말씀" />
+    <SectionContainer bg="plain" className="py-6 md:py-12">
+      <FadeIn direction="down">
+        <SectionHeading eyebrow="FEATURED SERMON" title="이번 주 말씀" />
+      </FadeIn>
 
-      {/* 모바일: 영상 + 라인 + 담임목사 */}
+      {/* 모바일: 영상만 */}
       <div className="mt-4 md:hidden">
-        <div className="overflow-hidden rounded-2xl bg-black ring-1 ring-black/5 shadow-md">
+        <div className="overflow-hidden border border-primary-navy/15 bg-soft p-1.5 shadow-sm md:p-2">
           <div className="relative aspect-video w-full">
             <iframe
               title={sermon.title}
@@ -40,15 +47,14 @@ export function FeaturedSermonSection({ sermon }: Props) {
             />
           </div>
         </div>
-        <hr className="mt-4 border-slate-200" />
-        <p className="mt-2.5 text-center text-sm font-semibold text-primary-navy">
-          {sermon.preacher}
-        </p>
       </div>
 
-      {/* 데스크톱: 기존 2-컬럼 레이아웃 */}
+      {/* 데스크톱: 기존 2-컬럼 레이아웃 — 좌(영상)·우(텍스트) 교차 등장 */}
       <div className="mt-8 hidden gap-8 md:grid md:gap-10 lg:grid-cols-[1.4fr_1fr]">
-        <div className="overflow-hidden rounded-2xl bg-black ring-1 ring-black/5 shadow-md">
+        <FadeIn
+          direction="right"
+          className="overflow-hidden border border-primary-navy/15 bg-soft p-1.5 shadow-sm md:p-2"
+        >
           <div className="relative aspect-video w-full">
             <iframe
               title={sermon.title}
@@ -58,9 +64,9 @@ export function FeaturedSermonSection({ sermon }: Props) {
               className="absolute inset-0 size-full"
             />
           </div>
-        </div>
+        </FadeIn>
 
-        <div className="flex flex-col justify-center">
+        <FadeIn direction="left" delay={120} className="flex flex-col justify-center">
           {sermon.scripture ? (
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary-sky">
               {sermon.scripture}
@@ -73,7 +79,7 @@ export function FeaturedSermonSection({ sermon }: Props) {
             <span>{sermon.preacher}</span>
             <span aria-hidden>·</span>
             <time dateTime={sermon.sermon_date}>
-              {format(new Date(sermon.sermon_date), "yyyy년 MM월 dd일")}
+              {format(new Date(sermon.sermon_date), "yyyy.MM.dd")}
             </time>
           </div>
           {sermon.summary ? (
@@ -86,7 +92,7 @@ export function FeaturedSermonSection({ sermon }: Props) {
               설교 자세히 보기
             </MoreLink>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </SectionContainer>
   );

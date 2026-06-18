@@ -32,8 +32,8 @@ const contact = setup.contact || {};
 const offering = setup.offering || { items: [] };
 const sns = setup.sns || {};
 const sections = setup.sections || [
-  "greeting", "vision", "featured-sermon", "sermons-quad",
-  "gallery-strip", "quick-actions", "online-giving", "location",
+  "greeting", "vision", "worship", "featured-sermon", "sermons-quad",
+  "quick-actions", "gallery-strip", "online-giving", "location",
 ];
 
 // SQL injection 방지 — JSON 문자열을 안전하게 escape
@@ -76,8 +76,8 @@ const offeringObj = { items: offering.items || [] };
 const worshipObj = { items: worship.items || [] };
 const landingSections = {
   items: [
-    "greeting", "vision", "featured-sermon", "sermons-quad",
-    "gallery-strip", "quick-actions", "online-giving", "location",
+    "greeting", "vision", "worship", "featured-sermon", "sermons-quad",
+    "quick-actions", "gallery-strip", "online-giving", "mission-card", "location",
   ].map((key) => ({
     key,
     visible: sections.includes(key),

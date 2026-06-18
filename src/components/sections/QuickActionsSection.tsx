@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { HandHelping, HeartHandshake, UserPlus } from "lucide-react";
 
+import { ParallaxBackdrop } from "@/components/sections/ParallaxBackdrop";
+import { cn } from "@/lib/utils";
+
 type Action = {
   title: string;
   href: string;
@@ -25,11 +28,14 @@ const ACTIONS: Action[] = [
   },
 ];
 
-export function QuickActionsSection() {
-  return (
+export function QuickActionsSection({ bgImage }: { bgImage?: string } = {}) {
+  const body = (
     <section
       aria-label="빠른 신청"
-      className="relative bg-secondary-sky py-12 text-white md:py-16"
+      className={cn(
+        "relative py-5 text-white md:py-7",
+        !bgImage && "bg-secondary-sky",
+      )}
     >
       <div
         aria-hidden
@@ -55,5 +61,14 @@ export function QuickActionsSection() {
         </ul>
       </div>
     </section>
+  );
+
+  if (!bgImage) return body;
+
+  // 사진 배경 + 청록 오버레이 (인접 남색 띠와 색 대비를 위해 청록 유지)
+  return (
+    <ParallaxBackdrop image={bgImage} overlayClassName="bg-secondary-sky/85">
+      {body}
+    </ParallaxBackdrop>
   );
 }

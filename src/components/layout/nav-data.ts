@@ -33,7 +33,7 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "선교소식",
-    children: [{ label: "필리핀선교", href: "/missions" }],
+    children: [{ label: "선교 사역", href: "/missions" }],
   },
   {
     label: "온라인 행정",
@@ -41,6 +41,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "새가족 등록", href: "/forms/newcomer" },
       { label: "기도제목", href: "/forms/prayer" },
       { label: "심방 요청", href: "/forms/visit" },
+      { label: "기부금 영수증 신청", href: "/forms/donation-receipt" },
       { label: "자료실", href: "/resources" },
     ],
   },

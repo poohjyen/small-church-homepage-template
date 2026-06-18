@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Bell, FileText, PlayCircle, Newspaper } from "lucide-react";
 import { format } from "date-fns";
 
+import { FadeIn } from "@/components/ui/fade-in";
 import type {
   Bulletin,
   Notice,
@@ -25,16 +26,21 @@ function CategoryCard({
   title,
   allHref,
   items,
+  visibility,
+  index = 0,
 }: {
   icon: ReactNode;
   eyebrow: string;
   title: string;
   allHref: string;
   items: CardItem[];
+  visibility?: string;
+  index?: number;
 }) {
   const top = items.slice(0, 3);
   return (
-    <article className="rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-secondary-sky/30 md:p-4">
+    <FadeIn delay={index * 80} className={`h-full ${visibility ?? ""}`}>
+    <article className="h-full border border-slate-200 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:border-secondary-sky/30 md:p-4">
       <header className="border-b border-slate-300 pb-2">
         <Link
           href={allHref}
@@ -60,10 +66,10 @@ function CategoryCard({
               href={it.href}
               className="flex items-center justify-between gap-3 py-2"
             >
-              <span className="line-clamp-1 flex-1 text-[15px] font-semibold text-charcoal">
+              <span className="line-clamp-1 min-w-0 flex-1 text-[14px] font-normal text-charcoal">
                 {it.title}
               </span>
-              <span className="shrink-0 text-xs text-warm-gray">
+              <span className="shrink-0 text-xs tabular-nums text-warm-gray">
                 {it.date}
               </span>
             </Link>
@@ -78,10 +84,10 @@ function CategoryCard({
               href={it.href}
               className="group flex items-center justify-between gap-3 py-1.5 transition hover:text-secondary-sky"
             >
-              <span className="line-clamp-1 flex-1 text-sm font-medium text-charcoal transition group-hover:text-secondary-sky">
+              <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium text-charcoal transition group-hover:text-secondary-sky">
                 {it.title}
               </span>
-              <span className="shrink-0 text-[11px] text-warm-gray">
+              <span className="shrink-0 text-[11px] tabular-nums text-warm-gray">
                 {it.date}
               </span>
             </Link>
@@ -89,6 +95,7 @@ function CategoryCard({
         ))}
       </ul>
     </article>
+    </FadeIn>
   );
 }
 
@@ -107,9 +114,11 @@ export function SermonsQuadSection({
 }: Props) {
   const ICON_CLASS = "size-6 text-secondary-sky";
   return (
-    <SectionContainer bg="gray">
-      <div className="grid gap-3 sm:grid-cols-2 sm:gap-3.5 md:gap-4 lg:grid-cols-4 lg:gap-4">
+    <SectionContainer bg="soft">
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-3.5 md:gap-4 lg:grid-cols-3 lg:gap-4">
         <CategoryCard
+          index={0}
+          visibility="hidden lg:block"
           icon={<PlayCircle className={ICON_CLASS} strokeWidth={1.5} aria-hidden />}
           eyebrow="SERMON"
           title="주일설교"
@@ -117,11 +126,12 @@ export function SermonsQuadSection({
           items={sermons.map((s) => ({
             href: `/sermons/${s.id}`,
             title: s.title,
-            date: format(new Date(s.sermon_date), "yyyy-MM-dd"),
+            date: format(new Date(s.sermon_date), "yyyy.MM.dd"),
             meta: s.scripture ?? undefined,
           }))}
         />
         <CategoryCard
+          index={1}
           icon={<FileText className={ICON_CLASS} strokeWidth={1.5} aria-hidden />}
           eyebrow="COLUMN"
           title="목양칼럼"
@@ -129,11 +139,12 @@ export function SermonsQuadSection({
           items={columns.map((c) => ({
             href: `/columns/${c.id}`,
             title: c.title,
-            date: format(new Date(c.published_date), "yyyy-MM-dd"),
+            date: format(new Date(c.published_date), "yyyy.MM.dd"),
             meta: c.author,
           }))}
         />
         <CategoryCard
+          index={2}
           icon={<Bell className={ICON_CLASS} strokeWidth={1.5} aria-hidden />}
           eyebrow="CHURCH NEWS"
           title="교회소식"
@@ -141,10 +152,12 @@ export function SermonsQuadSection({
           items={notices.map((n) => ({
             href: `/notices/${n.id}`,
             title: n.title,
-            date: format(new Date(n.created_at), "yyyy-MM-dd"),
+            date: format(new Date(n.created_at), "yyyy.MM.dd"),
           }))}
         />
         <CategoryCard
+          index={3}
+          visibility="lg:hidden"
           icon={<Newspaper className={ICON_CLASS} strokeWidth={1.5} aria-hidden />}
           eyebrow="BULLETIN"
           title="주보"
@@ -152,7 +165,7 @@ export function SermonsQuadSection({
           items={bulletins.map((b) => ({
             href: `/bulletins/${b.id}`,
             title: b.title,
-            date: format(new Date(b.bulletin_date), "yyyy-MM-dd"),
+            date: format(new Date(b.bulletin_date), "yyyy.MM.dd"),
           }))}
         />
       </div>

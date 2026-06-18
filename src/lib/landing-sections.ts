@@ -3,11 +3,13 @@
 export const LANDING_SECTION_KEYS = [
   "greeting",
   "vision",
+  "worship",
   "featured-sermon",
   "sermons-quad",
-  "gallery-strip",
   "quick-actions",
+  "gallery-strip",
   "online-giving",
+  "mission-card",
   "location",
 ] as const;
 
@@ -16,11 +18,13 @@ export type LandingSectionKey = (typeof LANDING_SECTION_KEYS)[number];
 export const LANDING_SECTION_LABELS: Record<LandingSectionKey, string> = {
   greeting: "인사·소개 허브",
   vision: "교회 비전 카드",
+  worship: "예배 시간 안내",
   "featured-sermon": "이번 주 설교 영상",
   "sermons-quad": "콘텐츠 4분할 (설교/칼럼/소식/주보)",
+  "quick-actions": "신청 바로가기 (기도제목/심방/새가족)",
   "gallery-strip": "갤러리 스트립",
-  "quick-actions": "신청 바로가기 (새가족/기도제목/심방)",
   "online-giving": "온라인 헌금 안내",
+  "mission-card": "선교 카드",
   location: "오시는 길",
 };
 
@@ -39,7 +43,7 @@ export function isLandingSectionKey(value: unknown): value is LandingSectionKey 
   );
 }
 
-// 저장된 값을 기본값과 병합해 항상 8개 키를 모두 포함시키고 중복 제거
+// 저장된 값을 기본값과 병합해 항상 모든 키를 포함시키고 중복 제거
 export function normalizeLandingSections(
   stored: unknown,
 ): LandingSectionConfig[] {

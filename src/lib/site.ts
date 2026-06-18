@@ -13,6 +13,7 @@ export const SITE = {
   name: CHURCH.name,
   fullName: CHURCH.fullName,
   description: CHURCH.description,
+  pastorName: CHURCH.pastorName,
   address: CHURCH.defaults.address,
   telephone: CHURCH.defaults.telephone,
   email: CHURCH.defaults.email,
@@ -32,4 +33,13 @@ export function absoluteUrl(path: string): string {
   const base = getSiteUrl();
   if (!path.startsWith("/")) return `${base}/${path}`;
   return `${base}${path}`;
+}
+
+/**
+ * 인사말(greeting) 설정의 이름이 있으면 그것을, 없으면 church.config의 담임목사명을 반환.
+ */
+export function resolvePastorName(
+  greeting: { name?: string | null } | null | undefined,
+): string {
+  return greeting?.name?.trim() || SITE.pastorName;
 }
