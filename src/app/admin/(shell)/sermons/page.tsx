@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { AdminSearchBar } from "@/components/admin/AdminSearchBar";
+import { YoutubeSyncButton } from "@/components/admin/YoutubeSyncButton";
 import { getSermons } from "@/lib/data/sermons";
 import { SermonsTable } from "./SermonsTable";
+import { syncSermonsFromYouTube } from "./actions";
 
 export const metadata = { title: "주일설교 관리" };
 
@@ -26,15 +28,18 @@ export default async function AdminSermonsPage({ searchParams }: Props) {
           search ? `"${search}" 검색 결과 ${total}건` : `총 ${total}건`
         }
         actions={
-          <Button
-            className="bg-primary-navy text-white hover:bg-secondary-sky"
-            render={
-              <Link href="/admin/sermons/new">
-                <Plus className="size-4" aria-hidden />
-                새 설교 등록
-              </Link>
-            }
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <YoutubeSyncButton action={syncSermonsFromYouTube} />
+            <Button
+              className="bg-primary-navy text-white hover:bg-secondary-sky"
+              render={
+                <Link href="/admin/sermons/new">
+                  <Plus className="size-4" aria-hidden />
+                  새 설교 등록
+                </Link>
+              }
+            />
+          </div>
         }
       />
 

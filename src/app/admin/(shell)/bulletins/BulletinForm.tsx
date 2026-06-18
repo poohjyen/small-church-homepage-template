@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Upload, FileText, X, ImagePlus } from "lucide-react";
+import { Upload, FileText, X, ImagePlus, Sparkles, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,10 +12,35 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Bulletin } from "@/types/database";
 import { useFormDirty } from "@/lib/hooks/useFormDirty";
+import { createClient } from "@/lib/supabase/client";
+import {
+  formatNoticeContent,
+  formatNoticeTitle,
+} from "@/lib/bulletin/format";
+import { convertAndUploadPdfPages } from "@/lib/pdf/render-pdf-pages";
 import { createBulletin, updateBulletin } from "./actions";
+import { analyzeBulletinPdf } from "./ai-actions";
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 const MAX_THUMB_BYTES = 10 * 1024 * 1024;
+
+/** 브라우저에서 bulletins 버킷으로 PDF 업로드 → 공개 URL (AI 분석은 URL이 필요) */
+async function uploadPdfToStorage(
+  file: File,
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `${Date.now()}-${safeName}`;
+  const { error } = await supabase.storage
+    .from("bulletins")
+    .upload(path, file, {
+      contentType: file.type || "application/pdf",
+      upsert: false,
+    });
+  if (error) return { ok: false, error: error.message };
+  const { data } = supabase.storage.from("bulletins").getPublicUrl(path);
+  return { ok: true, url: data.publicUrl };
+}
 
 export function BulletinForm({ initial }: { initial?: Bulletin }) {
   const router = useRouter();
@@ -35,6 +60,17 @@ export function BulletinForm({ initial }: { initial?: Bulletin }) {
   const [attachColumn, setAttachColumn] = useState(false);
   const [columnTitle, setColumnTitle] = useState("");
   const [columnContent, setColumnContent] = useState("");
+  const [attachNotice, setAttachNotice] = useState(false);
+  const [noticeTitle, setNoticeTitle] = useState("");
+  const [noticeContent, setNoticeContent] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [aiFilled, setAiFilled] = useState(false);
+  const [uploadedPdfUrl, setUploadedPdfUrl] = useState<string | null>(null);
+  const [convertProgress, setConvertProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
@@ -49,11 +85,69 @@ export function BulletinForm({ initial }: { initial?: Bulletin }) {
       return;
     }
     setFile(f);
+    setUploadedPdfUrl(null);
   }
 
   function clearFile() {
     setFile(null);
+    setUploadedPdfUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function onAnalyze() {
+    if (!file) {
+      toast.error("먼저 PDF 파일을 선택해 주세요.");
+      return;
+    }
+    setAnalyzing(true);
+    try {
+      let pdfUrl = uploadedPdfUrl;
+      if (!pdfUrl) {
+        setUploading(true);
+        const r = await uploadPdfToStorage(file);
+        setUploading(false);
+        if (!r.ok) {
+          toast.error(r.error);
+          return;
+        }
+        pdfUrl = r.url;
+        setUploadedPdfUrl(pdfUrl);
+      }
+
+      toast.info("AI가 주보를 분석 중입니다... (10~20초 정도 걸려요)");
+      const result = await analyzeBulletinPdf(pdfUrl);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+
+      const d = result.data;
+      const titleFromDate = (date: string) => {
+        const m = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return d.title;
+        return `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일 주보`;
+      };
+      if (d.bulletin_date) setBulletinDate(d.bulletin_date);
+      setTitle(d.title || titleFromDate(d.bulletin_date));
+      if (d.column_title || d.column_content) {
+        setAttachColumn(true);
+        if (d.column_title) setColumnTitle(d.column_title);
+        if (d.column_content) setColumnContent(d.column_content);
+      }
+      if (d.notice_items.length > 0 || d.member_news.length > 0) {
+        setAttachNotice(true);
+        setNoticeTitle(formatNoticeTitle(d.bulletin_date));
+        setNoticeContent(formatNoticeContent(d.notice_items, d.member_news));
+      }
+      setAiFilled(true);
+      toast.success("AI 자동 채우기 완료. 내용을 확인 후 등록해 주세요.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "AI 분석에 실패했습니다.";
+      toast.error(msg);
+    } finally {
+      setAnalyzing(false);
+      setUploading(false);
+    }
   }
 
   function onThumbChange(e: React.ChangeEvent<HTMLInputElement>) {

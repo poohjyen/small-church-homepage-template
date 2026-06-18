@@ -8,6 +8,43 @@ type Result = { ok: true; id?: string } | { ok: false; error: string };
 const MAX_PDF_BYTES = 50 * 1024 * 1024; // 50 MB
 const MAX_THUMB_BYTES = 10 * 1024 * 1024; // 10 MB
 
+/** 페이지 이미지 URL 배열 검증 — 우리 Supabase Storage URL만 허용 */
+function validatePageImageUrls(
+  urls: string[],
+): { ok: true; urls: string[] } | { ok: false; error: string } {
+  if (urls.length === 0) return { ok: true, urls: [] };
+  if (urls.length > 50)
+    return { ok: false, error: "페이지 이미지가 너무 많습니다. (최대 50)" };
+  const allowedHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
+    : null;
+  for (const u of urls) {
+    let host: string;
+    try {
+      host = new URL(u).host;
+    } catch {
+      return { ok: false, error: "페이지 이미지 URL 형식이 올바르지 않습니다." };
+    }
+    const isSupabase =
+      host.endsWith(".supabase.co") && (!allowedHost || host === allowedHost);
+    if (!isSupabase)
+      return { ok: false, error: "허용되지 않은 이미지 위치입니다." };
+  }
+  return { ok: true, urls };
+}
+
+/** FormData의 "page_image_urls"(JSON 배열 문자열)를 파싱 */
+function parsePageImageUrls(value: FormDataEntryValue | null): string[] {
+  if (typeof value !== "string" || value.trim().length === 0) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((u): u is string => typeof u === "string" && u.length > 0);
+  } catch {
+    return [];
+  }
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const {
@@ -77,8 +114,12 @@ export async function createBulletin(formData: FormData): Promise<Result> {
   const dateR = validateText(formData.get("bulletin_date"), "주보 날짜", 1, 32);
   if (!dateR.ok) return { ok: false, error: dateR.error };
 
+  // PDF는 새 파일을 첨부하거나, 클라이언트가 이미 업로드한 URL을 넘길 수 있음
   const file = formData.get("pdf_file");
-  if (!(file instanceof File) || file.size === 0) {
+  const preUploadedPdfUrl =
+    (formData.get("pdf_url") as string | null)?.trim() || "";
+  const hasFile = file instanceof File && file.size > 0;
+  if (!hasFile && !preUploadedPdfUrl) {
     return { ok: false, error: "PDF 파일을 첨부해 주세요." };
   }
 
@@ -90,11 +131,32 @@ export async function createBulletin(formData: FormData): Promise<Result> {
     if (columnContent.length < 5) return { ok: false, error: "칼럼 본문을 입력해 주세요." };
   }
 
+  const attachNotice = formData.get("attach_notice") === "true";
+  const noticeTitle = (formData.get("notice_title") as string | null)?.trim() ?? "";
+  const noticeContent = (formData.get("notice_content") as string | null)?.trim() ?? "";
+  if (attachNotice) {
+    if (noticeTitle.length < 2) return { ok: false, error: "교회소식 제목을 입력해 주세요." };
+    if (noticeTitle.length > 200) return { ok: false, error: "교회소식 제목이 너무 깁니다." };
+    if (noticeContent.length < 5) return { ok: false, error: "교회소식 본문을 입력해 주세요." };
+    if (noticeContent.length > 20000) return { ok: false, error: "교회소식 본문이 너무 깁니다." };
+  }
+
+  const pages = validatePageImageUrls(parsePageImageUrls(formData.get("page_image_urls")));
+  if (!pages.ok) return pages;
+  if (preUploadedPdfUrl) {
+    const check = validatePageImageUrls([preUploadedPdfUrl]);
+    if (!check.ok) return { ok: false, error: "허용되지 않은 PDF 위치입니다." };
+  }
+
   const { supabase, error } = await requireAdmin();
   if (error) return { ok: false, error };
 
-  const upload = await uploadPdf(supabase, file);
-  if (!upload.ok) return { ok: false, error: upload.error };
+  let pdfUrl = preUploadedPdfUrl;
+  if (hasFile) {
+    const upload = await uploadPdf(supabase, file);
+    if (!upload.ok) return { ok: false, error: upload.error };
+    pdfUrl = upload.url;
+  }
 
   let thumbnailUrl: string | null = null;
   const thumbFile = formData.get("thumbnail_file");
@@ -103,14 +165,17 @@ export async function createBulletin(formData: FormData): Promise<Result> {
     if (!thumbUpload.ok) return { ok: false, error: thumbUpload.error };
     thumbnailUrl = thumbUpload.url;
   }
+  // 표지를 직접 올리지 않았으면 1페이지 이미지를 표지로 사용
+  if (!thumbnailUrl && pages.urls[0]) thumbnailUrl = pages.urls[0];
 
   const { data: bulletin, error: insertError } = await supabase
     .from("bulletins")
     .insert({
       title: titleR.value,
       bulletin_date: dateR.value,
-      pdf_url: upload.url,
+      pdf_url: pdfUrl,
       thumbnail_url: thumbnailUrl,
+      page_image_urls: pages.urls,
     })
     .select("id")
     .single();
@@ -138,6 +203,9 @@ export async function updateBulletin(id: string, formData: FormData): Promise<Re
   const dateR = validateText(formData.get("bulletin_date"), "주보 날짜", 1, 32);
   if (!dateR.ok) return { ok: false, error: dateR.error };
 
+  const pages = validatePageImageUrls(parsePageImageUrls(formData.get("page_image_urls")));
+  if (!pages.ok) return pages;
+
   const { supabase, error } = await requireAdmin();
   if (error) return { ok: false, error };
 
@@ -146,6 +214,7 @@ export async function updateBulletin(id: string, formData: FormData): Promise<Re
     bulletin_date: string;
     pdf_url: string;
     thumbnail_url: string;
+    page_image_urls: string[];
   }> = {
     title: titleR.value,
     bulletin_date: dateR.value,
@@ -164,6 +233,8 @@ export async function updateBulletin(id: string, formData: FormData): Promise<Re
     if (!thumbUpload.ok) return { ok: false, error: thumbUpload.error };
     update.thumbnail_url = thumbUpload.url;
   }
+
+  if (pages.urls.length > 0) update.page_image_urls = pages.urls;
 
   const { error: updateError } = await supabase
     .from("bulletins")

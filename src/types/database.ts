@@ -32,8 +32,16 @@ export type Database = {
       };
       bulletins: {
         Row: Bulletin;
-        Insert: Omit<Bulletin, "id" | "created_at" | "is_draft" | "deleted_at"> &
-          Partial<Pick<Bulletin, "id" | "created_at" | "is_draft" | "deleted_at">>;
+        Insert: Omit<
+          Bulletin,
+          "id" | "created_at" | "is_draft" | "deleted_at" | "page_image_urls"
+        > &
+          Partial<
+            Pick<
+              Bulletin,
+              "id" | "created_at" | "is_draft" | "deleted_at" | "page_image_urls"
+            >
+          >;
         Update: Partial<Bulletin>;
         Relationships: [];
       };
@@ -199,6 +207,8 @@ export type Bulletin = {
   title: string;
   pdf_url: string;
   thumbnail_url: string | null;
+  /** PDF 페이지 이미지 URL 배열 (순서 = 페이지 순서, 0019 마이그레이션) */
+  page_image_urls: string[];
   bulletin_date: string;
   is_draft: boolean;
   created_at: string;
@@ -334,6 +344,8 @@ export type SettingValueMap = {
   sns: { band: string; youtube: string; instagram: string };
   admin_email: string;
   admin_emails: string[];
+  youtube_sermon_sync: { playlist_id: string; default_preacher: string };
+  youtube_video_sync: { playlist_id: string };
   page_hero_images: Record<string, string>;
   pastor_greeting: { name: string; photo_url: string; body: string };
   worship_schedules: { items: WorshipScheduleItem[] };

@@ -7,6 +7,12 @@ import {
   extractYoutubeId,
   type AdminSermonInput,
 } from "@/lib/forms/admin-schemas";
+import { getSiteSetting } from "@/lib/data/site";
+import {
+  isYoutubeSyncConfigured,
+  syncSermonPlaylist,
+  YOUTUBE_NOT_CONFIGURED_MESSAGE,
+} from "@/lib/youtube/sync";
 
 type Result = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -118,6 +124,36 @@ export async function bulkDeleteSermons(
   revalidatePath("/sermons");
   revalidatePath("/admin/sermons");
   return { ok: true, deleted: ids.length };
+}
+
+/** 관리자 "유튜브에서 새 영상 가져오기" 버튼. Cron과 동일한 함수를 즉시 실행. */
+export async function syncSermonsFromYouTube(): Promise<
+  Result & { found?: number; inserted?: number }
+> {
+  const { error } = await requireAdmin();
+  if (error) return { ok: false, error };
+
+  // 유튜브 API 키 미설정 시 — 친절한 안내(오류 토스트로 표시)
+  if (!isYoutubeSyncConfigured()) {
+    return { ok: false, error: YOUTUBE_NOT_CONFIGURED_MESSAGE };
+  }
+
+  const setting = await getSiteSetting("youtube_sermon_sync");
+  if (!setting?.playlist_id) {
+    return {
+      ok: false,
+      error: "설정 페이지에서 유튜브 재생목록 ID를 먼저 입력해 주세요.",
+    };
+  }
+  const result = await syncSermonPlaylist(
+    setting.playlist_id,
+    setting.default_preacher || "담임목사",
+  );
+  if (!result.ok) return { ok: false, error: result.error };
+  revalidatePath("/sermons");
+  revalidatePath("/admin/sermons");
+  revalidatePath("/admin");
+  return { ok: true, found: result.found, inserted: result.inserted };
 }
 
 export async function publishSermon(id: string): Promise<Result> {
