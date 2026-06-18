@@ -22,9 +22,9 @@ import { getLatestBulletin } from "@/lib/data/bulletins";
 import { getRecentSermons } from "@/lib/data/sermons";
 import { getColumns } from "@/lib/data/columns";
 import { countNewSubmissions } from "@/lib/data/forms";
-import { getSiteSetting } from "@/lib/data/site";
 import { getContentStats } from "@/lib/data/admin-stats";
-import { CHURCH } from "../../../../church.config";
+import { getVisitorStats } from "@/lib/data/visitor-stats";
+import { VisitorStatsCards } from "@/components/admin/VisitorStatsCards";
 
 export const metadata = { title: "대시보드" };
 
@@ -58,19 +58,16 @@ function staleness(lastDate: string | null) {
 }
 
 export default async function AdminDashboardPage() {
-  const [notices, bulletin, sermons, columns, counts, adminNameSetting, stats] =
+  const [notices, bulletin, sermons, columns, counts, stats, visitors] =
     await Promise.all([
       getRecentNotices(1),
       getLatestBulletin(),
       getRecentSermons(1),
       getColumns({ page: 1, perPage: 1 }),
       countNewSubmissions(),
-      getSiteSetting("admin_name"),
       getContentStats(),
+      getVisitorStats(7),
     ]);
-  const adminName =
-    (typeof adminNameSetting === "string" && adminNameSetting.trim()) ||
-    CHURCH.pastorName.replace(/\s*목사\s*$/, "");
 
   const submissionCards: SubmissionCard[] = [
     {
@@ -137,7 +134,7 @@ export default async function AdminDashboardPage() {
       <header>
         <p className="text-sm text-warm-gray">{today}</p>
         <h1 className="mt-1 text-2xl font-bold text-charcoal md:text-3xl">
-          안녕하세요, {adminName} 목사님 <span aria-hidden>👋</span>
+          안녕하세요 <span aria-hidden>👋</span>
         </h1>
         <p className="mt-2 text-sm text-warm-gray">
           오늘도 한 영혼을 향한 사역에 동행합니다.
@@ -188,6 +185,8 @@ export default async function AdminDashboardPage() {
           ))}
         </div>
       </section>
+
+      <VisitorStatsCards stats={visitors} />
 
       <section aria-labelledby="stats-heading">
         <div className="mb-3 flex items-center justify-between">

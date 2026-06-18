@@ -12,10 +12,15 @@ import { SermonsQuadSection } from "@/components/sections/SermonsQuadSection";
 import { VisionCardSection } from "@/components/sections/VisionCardSection";
 import { WorshipSection } from "@/components/sections/WorshipSection";
 import { FadeIn, type Direction } from "@/components/ui/fade-in";
+import { SectionEditAnchor } from "@/components/edit-mode/SectionEditAnchor";
+import {
+  HERO_EDIT_TARGET,
+  LANDING_EDIT_TARGETS,
+} from "@/components/edit-mode/section-targets";
 import type { LandingData } from "@/lib/data/landing";
 import type { LandingSectionKey } from "@/lib/landing-sections";
 
-type Props = { data: LandingData };
+type Props = { data: LandingData; isAdmin?: boolean };
 
 // 풀폭 사진 띠는 bg-fixed 패럴럭스가 동작하려면 transform(FadeIn) 조상이 없어야 한다.
 // (about 페이지의 ParallaxBand 처럼 FadeIn 으로 감싸지 않고 그대로 렌더)
@@ -40,7 +45,7 @@ const SECTION_DIRECTION: Record<LandingSectionKey, Direction> = {
   location: "none",
 };
 
-export function HomeDesktop({ data }: Props) {
+export function HomeDesktop({ data, isAdmin = false }: Props) {
   const renderers: Record<LandingSectionKey, () => ReactNode> = {
     greeting: () => <GreetingHubSection />,
     vision: () => <VisionCardSection motto={data.yearMotto} />,
@@ -76,17 +81,31 @@ export function HomeDesktop({ data }: Props) {
 
   return (
     <>
-      <HeroSection slides={data.heroSlides} />
+      {isAdmin ? (
+        <SectionEditAnchor target={HERO_EDIT_TARGET}>
+          <HeroSection slides={data.heroSlides} />
+        </SectionEditAnchor>
+      ) : (
+        <HeroSection slides={data.heroSlides} />
+      )}
       {data.sections
         .filter((s) => s.visible && s.key !== "mission-card")
         .map((s) => {
           const content = renderers[s.key]();
-          return PARALLAX_BANDS.has(s.key) ? (
+          const node = PARALLAX_BANDS.has(s.key) ? (
             <Fragment key={s.key}>{content}</Fragment>
           ) : (
             <FadeIn key={s.key} direction={SECTION_DIRECTION[s.key]}>
               {content}
             </FadeIn>
+          );
+          const target = LANDING_EDIT_TARGETS[s.key];
+          return isAdmin && target ? (
+            <SectionEditAnchor key={s.key} target={target}>
+              {node}
+            </SectionEditAnchor>
+          ) : (
+            node
           );
         })}
     </>

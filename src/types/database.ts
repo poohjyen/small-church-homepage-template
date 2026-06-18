@@ -127,9 +127,25 @@ export type Database = {
         Update: Partial<DonationReceipt>;
         Relationships: [];
       };
+      page_views: {
+        Row: PageView;
+        Insert: Omit<PageView, "id" | "created_at"> &
+          Partial<Pick<PageView, "id" | "created_at">>;
+        Update: Partial<PageView>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      get_visitor_stats: {
+        Args: { days?: number };
+        Returns: VisitorStatsJson;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

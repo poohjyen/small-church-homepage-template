@@ -12,10 +12,15 @@ import { SermonsQuadSection } from "@/components/sections/SermonsQuadSection";
 import { VisionCardSection } from "@/components/sections/VisionCardSection";
 import { WorshipSection } from "@/components/sections/WorshipSection";
 import { FadeIn, type Direction } from "@/components/ui/fade-in";
+import { SectionEditAnchor } from "@/components/edit-mode/SectionEditAnchor";
+import {
+  HERO_EDIT_TARGET,
+  LANDING_EDIT_TARGETS,
+} from "@/components/edit-mode/section-targets";
 import type { LandingData } from "@/lib/data/landing";
 import type { LandingSectionKey } from "@/lib/landing-sections";
 
-type Props = { data: LandingData };
+type Props = { data: LandingData; isAdmin?: boolean };
 
 // 모바일은 좌우 이동 없이 — 풀폭 밴드 zoom, 내부 stagger 보유 섹션은 none, 나머지 up
 const MOBILE_SECTION_DIRECTION: Record<LandingSectionKey, Direction> = {
@@ -43,7 +48,7 @@ const MOBILE_SECTION_ORDER: LandingSectionKey[] = [
   "location",
 ];
 
-export function HomeMobile({ data }: Props) {
+export function HomeMobile({ data, isAdmin = false }: Props) {
   const renderers: Record<LandingSectionKey, () => ReactNode> = {
     greeting: () => <GreetingHubMobile />,
     vision: () => <VisionCardSection motto={data.yearMotto} />,
@@ -81,13 +86,27 @@ export function HomeMobile({ data }: Props) {
 
   return (
     <>
-      <HeroSection slides={data.heroSlides} />
+      {isAdmin ? (
+        <SectionEditAnchor target={HERO_EDIT_TARGET}>
+          <HeroSection slides={data.heroSlides} />
+        </SectionEditAnchor>
+      ) : (
+        <HeroSection slides={data.heroSlides} />
+      )}
       {MOBILE_SECTION_ORDER.map((key) => {
         if (visibleByKey.get(key) === false) return null;
-        return (
+        const node = (
           <FadeIn key={key} direction={MOBILE_SECTION_DIRECTION[key]}>
             {renderers[key]()}
           </FadeIn>
+        );
+        const target = LANDING_EDIT_TARGETS[key];
+        return isAdmin && target ? (
+          <SectionEditAnchor key={key} target={target}>
+            {node}
+          </SectionEditAnchor>
+        ) : (
+          node
         );
       })}
     </>
