@@ -124,7 +124,7 @@ export function VideoForm({ initial }: { initial?: Video }) {
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="https://youtu.be/SLP33ddD6CA 또는 SLP33ddD6CA"
+                  placeholder="https://youtu.be/영상ID 또는 영상ID"
                   {...field}
                 />
               </FormControl>
