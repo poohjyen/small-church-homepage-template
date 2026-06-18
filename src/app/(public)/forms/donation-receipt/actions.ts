@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { verifyTurnstile } from "@/lib/turnstile";
 import {
   donationReceiptSchema,
   type DonationReceiptInput,
@@ -26,6 +27,8 @@ export async function submitDonationReceipt(
       error: parsed.error.issues[0]?.message ?? "유효하지 않은 입력입니다.",
     };
   }
+  const captcha = await verifyTurnstile(parsed.data.turnstile_token);
+  if (!captcha.ok) return { ok: false, error: captcha.error };
   const v = parsed.data;
   const supabase = await createClient();
   const { error: insertError } = await supabase

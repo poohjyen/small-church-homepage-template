@@ -26,6 +26,7 @@ import {
   type DonationReceiptInput,
 } from "@/lib/forms/schemas";
 
+import { TurnstileWidget } from "@/components/public/TurnstileWidget";
 import { submitDonationReceipt } from "./actions";
 
 const DELIVERY_OPTIONS: {
@@ -39,6 +40,7 @@ const DELIVERY_OPTIONS: {
 
 export function DonationReceiptForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [token, setToken] = useState("");
   const form = useForm<DonationReceiptInput>({
     resolver: standardSchemaResolver(donationReceiptSchema),
     defaultValues: {
@@ -57,7 +59,10 @@ export function DonationReceiptForm() {
   const deliveryMethod = form.watch("delivery_method");
 
   async function onSubmit(values: DonationReceiptInput) {
-    const result = await submitDonationReceipt(values);
+    const result = await submitDonationReceipt({
+      ...values,
+      turnstile_token: token,
+    });
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -270,6 +275,8 @@ export function DonationReceiptForm() {
         />
 
         <ConsentField control={form.control} />
+
+        <TurnstileWidget onToken={setToken} />
 
         <Button
           type="submit"

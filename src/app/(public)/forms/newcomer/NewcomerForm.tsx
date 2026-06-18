@@ -19,10 +19,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { newcomerSchema, type NewcomerInput } from "@/lib/forms/schemas";
+import { TurnstileWidget } from "@/components/public/TurnstileWidget";
 import { submitNewcomer } from "./actions";
 
 export function NewcomerForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [token, setToken] = useState("");
   const form = useForm<NewcomerInput>({
     resolver: standardSchemaResolver(newcomerSchema),
     defaultValues: {
@@ -38,7 +40,7 @@ export function NewcomerForm() {
   });
 
   async function onSubmit(values: NewcomerInput) {
-    const result = await submitNewcomer(values);
+    const result = await submitNewcomer({ ...values, turnstile_token: token });
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -112,7 +114,7 @@ export function NewcomerForm() {
             <FormItem>
               <FormLabel>주소</FormLabel>
               <FormControl>
-                <Input placeholder="대전광역시 ○○구 ○○동" {...field} />
+                <Input placeholder="○○광역시 ○○구 ○○동" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,6 +172,8 @@ export function NewcomerForm() {
         />
 
         <ConsentField control={form.control} />
+
+        <TurnstileWidget onToken={setToken} />
 
         <Button
           type="submit"

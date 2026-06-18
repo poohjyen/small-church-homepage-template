@@ -21,6 +21,7 @@ export const newcomerSchema = z.object({
   visit_reason: z.string().max(300).optional(),
   previous_church: z.string().max(100).optional(),
   consent,
+  turnstile_token: z.string().optional(),
 });
 export type NewcomerInput = z.infer<typeof newcomerSchema>;
 
@@ -31,6 +32,7 @@ export const prayerSchema = z
     phone: z.string().optional(),
     content: z.string().min(5, "기도제목을 입력해 주세요.").max(2000),
     consent,
+    turnstile_token: z.string().optional(),
   })
   .superRefine((val, ctx) => {
     if (!val.is_anonymous) {
@@ -60,6 +62,7 @@ export const visitSchema = z.object({
   requested_time: z.string().optional(),
   reason: z.string().max(500).optional(),
   consent,
+  turnstile_token: z.string().optional(),
 });
 export type VisitInput = z.infer<typeof visitSchema>;
 
@@ -76,6 +79,7 @@ export const donationReceiptSchema = z
     delivery_fax: z.string().optional(),
     note: z.string().max(500).optional(),
     consent,
+    turnstile_token: z.string().optional(),
   })
   .superRefine((val, ctx) => {
     if (val.delivery_method === "email") {

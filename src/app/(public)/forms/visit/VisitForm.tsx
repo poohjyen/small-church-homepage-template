@@ -19,10 +19,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { visitSchema, type VisitInput } from "@/lib/forms/schemas";
+import { TurnstileWidget } from "@/components/public/TurnstileWidget";
 import { submitVisit } from "./actions";
 
 export function VisitForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [token, setToken] = useState("");
   const form = useForm<VisitInput>({
     resolver: standardSchemaResolver(visitSchema),
     defaultValues: {
@@ -37,7 +39,7 @@ export function VisitForm() {
   });
 
   async function onSubmit(values: VisitInput) {
-    const result = await submitVisit(values);
+    const result = await submitVisit({ ...values, turnstile_token: token });
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -113,7 +115,7 @@ export function VisitForm() {
                 주소 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="대전광역시 ○○구 ○○동 (상세주소 포함)" {...field} />
+                <Input placeholder="○○광역시 ○○구 ○○동 (상세주소 포함)" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -201,6 +203,8 @@ export function VisitForm() {
             </FormItem>
           )}
         />
+
+        <TurnstileWidget onToken={setToken} />
 
         <Button
           type="submit"

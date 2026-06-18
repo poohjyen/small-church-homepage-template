@@ -19,10 +19,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { prayerSchema, type PrayerInput } from "@/lib/forms/schemas";
+import { TurnstileWidget } from "@/components/public/TurnstileWidget";
 import { submitPrayer } from "./actions";
 
 export function PrayerForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [token, setToken] = useState("");
   const form = useForm<PrayerInput>({
     resolver: standardSchemaResolver(prayerSchema),
     defaultValues: {
@@ -40,7 +42,7 @@ export function PrayerForm() {
     const payload = values.is_anonymous
       ? { ...values, name: "", phone: "" }
       : values;
-    const result = await submitPrayer(payload);
+    const result = await submitPrayer({ ...payload, turnstile_token: token });
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -194,6 +196,8 @@ export function PrayerForm() {
             </FormItem>
           )}
         />
+
+        <TurnstileWidget onToken={setToken} />
 
         <Button
           type="submit"

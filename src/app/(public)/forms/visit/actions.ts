@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { verifyTurnstile } from "@/lib/turnstile";
 import { visitSchema, type VisitInput } from "@/lib/forms/schemas";
 import { sendAdminNotification, row, wrapTable } from "@/lib/email/resend";
 import { CHURCH } from "../../../../../church.config";
@@ -15,6 +16,8 @@ export async function submitVisit(input: VisitInput): Promise<Result> {
       error: parsed.error.issues[0]?.message ?? "유효하지 않은 입력입니다.",
     };
   }
+  const captcha = await verifyTurnstile(parsed.data.turnstile_token);
+  if (!captcha.ok) return { ok: false, error: captcha.error };
   const v = parsed.data;
   const supabase = await createClient();
   const { error: insertError } = await supabase.from("visit_requests").insert({
