@@ -17,6 +17,8 @@ import {
   Sparkles,
   Files,
   LayoutPanelTop,
+  PictureInPicture2,
+  ReceiptText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -65,6 +67,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "새가족", href: "/admin/forms/newcomer", icon: UserPlus },
       { label: "기도제목", href: "/admin/forms/prayer", icon: HandHeart },
       { label: "심방 요청", href: "/admin/forms/visit", icon: Home },
+      {
+        label: "기부금 영수증",
+        href: "/admin/forms/donation-receipt",
+        icon: ReceiptText,
+      },
     ],
   },
   {
@@ -73,6 +80,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "사이트 설정", href: "/admin/settings", icon: Settings },
       { label: "히어로 슬라이드", href: "/admin/hero", icon: Images },
       { label: "랜딩 섹션 순서", href: "/admin/landing", icon: LayoutPanelTop },
+      { label: "팝업/배너", href: "/admin/popups", icon: PictureInPicture2 },
     ],
   },
 ];

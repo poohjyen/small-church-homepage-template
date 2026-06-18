@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   FolderOpen,
   TrendingUp,
+  ReceiptText,
 } from "lucide-react";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -90,6 +91,12 @@ export default async function AdminDashboardPage() {
       count: counts.visit,
       Icon: HomeIcon,
     },
+    {
+      href: "/admin/forms/donation-receipt",
+      label: "기부금 영수증",
+      count: counts.donation,
+      Icon: ReceiptText,
+    },
   ];
 
   const recentRows: RecentRow[] = [
@@ -153,7 +160,7 @@ export default async function AdminDashboardPage() {
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {submissionCards.map(({ href, label, count, Icon }) => (
             <Link
               key={href}

@@ -140,3 +140,44 @@ export const adminResourceSchema = z.object({
   description: z.string().trim().max(500).optional().or(z.literal("")),
 });
 export type AdminResourceInput = z.infer<typeof adminResourceSchema>;
+
+// ───── Site Popups ─────
+const POPUP_POSITION_VALUES = [
+  "center",
+  "top-right",
+  "bottom-right",
+  "top-left",
+  "bottom-left",
+] as const;
+
+export const adminPopupSchema = z
+  .object({
+    title: trimmedMin("관리용 제목").max(100),
+    image_alt: z.string().trim().max(200).optional().or(z.literal("")),
+    link_url: z
+      .string()
+      .trim()
+      .url("클릭 링크는 http:// 또는 https://로 시작해야 합니다.")
+      .optional()
+      .or(z.literal("")),
+    link_target: z.enum(["_self", "_blank"]).default("_self"),
+    starts_at: trimmedMin("시작일"),
+    ends_at: trimmedMin("종료일"),
+    position: z.enum(POPUP_POSITION_VALUES).default("center"),
+    width: z.number().int().min(200).max(1200).default(480),
+    width_mobile: z.number().int().min(200).max(600).default(320),
+    display_priority: z.number().int().min(0).max(9999).default(0),
+    show_dont_show_today: z.boolean().default(true),
+    show_close_button: z.boolean().default(true),
+    is_active: z.boolean().default(true),
+    pages: z.array(z.string().trim().min(1)).min(1).default(["/"]),
+  })
+  .refine(
+    (v) => {
+      const s = new Date(v.starts_at);
+      const e = new Date(v.ends_at);
+      return !Number.isNaN(s.getTime()) && !Number.isNaN(e.getTime()) && e > s;
+    },
+    { message: "종료일은 시작일보다 늦어야 합니다.", path: ["ends_at"] },
+  );
+export type AdminPopupInput = z.infer<typeof adminPopupSchema>;

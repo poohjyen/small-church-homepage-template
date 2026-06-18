@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/sheet";
 import { FORM_STATUS_LABEL } from "@/lib/data/helpers";
 import type {
+  DonationDeliveryMethod,
+  DonationReceipt,
   FormStatus,
   NewcomerForm,
   PrayerRequest,
@@ -30,12 +32,24 @@ import {
   updateNewcomerSubmission,
   updatePrayerSubmission,
   updateVisitSubmission,
+  updateDonationReceiptSubmission,
 } from "./actions";
 
 type Props =
   | { type: "newcomer"; row: NewcomerForm; trigger: React.ReactElement }
   | { type: "prayer"; row: PrayerRequest; trigger: React.ReactElement }
-  | { type: "visit"; row: VisitRequest; trigger: React.ReactElement };
+  | { type: "visit"; row: VisitRequest; trigger: React.ReactElement }
+  | {
+      type: "donation-receipt";
+      row: DonationReceipt;
+      trigger: React.ReactElement;
+    };
+
+const DELIVERY_LABEL: Record<DonationDeliveryMethod, string> = {
+  pickup: "교회에서 수령",
+  email: "이메일 수령",
+  fax: "팩스 수령",
+};
 
 const STATUS_OPTIONS: FormStatus[] = [
   "new",
@@ -48,12 +62,14 @@ const TITLES: Record<Props["type"], string> = {
   newcomer: "새가족 신청 상세",
   prayer: "기도제목 상세",
   visit: "심방 요청 상세",
+  "donation-receipt": "기부금 영수증 신청 상세",
 };
 
 const ACTIONS = {
   newcomer: updateNewcomerSubmission,
   prayer: updatePrayerSubmission,
   visit: updateVisitSubmission,
+  "donation-receipt": updateDonationReceiptSubmission,
 } as const;
 
 function Field({
@@ -121,6 +137,25 @@ function VisitFields({ row }: { row: VisitRequest }) {
   );
 }
 
+function DonationReceiptFields({ row }: { row: DonationReceipt }) {
+  return (
+    <>
+      <Field label="대상자 성명" value={row.name} />
+      <Field label="생년월일" value={row.birthdate} />
+      <Field label="휴대폰" value={row.phone} />
+      <Field label="주소" value={row.address} />
+      <Field label="수령방법" value={DELIVERY_LABEL[row.delivery_method]} />
+      {row.delivery_method === "email" ? (
+        <Field label="이메일" value={row.delivery_email} />
+      ) : null}
+      {row.delivery_method === "fax" ? (
+        <Field label="팩스" value={row.delivery_fax} />
+      ) : null}
+      <Field label="기타요청" value={row.note} />
+    </>
+  );
+}
+
 export function SubmissionDetailSheet(props: Props) {
   const { type, row, trigger } = props;
   const [open, setOpen] = useState(false);
@@ -161,6 +196,9 @@ export function SubmissionDetailSheet(props: Props) {
           {type === "newcomer" ? <NewcomerFields row={row} /> : null}
           {type === "prayer" ? <PrayerFields row={row} /> : null}
           {type === "visit" ? <VisitFields row={row} /> : null}
+          {type === "donation-receipt" ? (
+            <DonationReceiptFields row={row} />
+          ) : null}
 
           <div className="space-y-2 border-t border-black/5 pt-4">
             <Label htmlFor="status">처리 상태</Label>

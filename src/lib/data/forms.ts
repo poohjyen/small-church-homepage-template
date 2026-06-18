@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
+  DonationReceipt,
   NewcomerForm,
   PrayerRequest,
   VisitRequest,
@@ -35,13 +36,25 @@ export async function getVisitRequests(): Promise<VisitRequest[]> {
   return data ?? [];
 }
 
+export async function getDonationReceipts(): Promise<DonationReceipt[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("donation_receipts")
+    .select("*")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function countNewSubmissions(): Promise<{
   newcomer: number;
   prayer: number;
   visit: number;
+  donation: number;
 }> {
   const supabase = await createClient();
-  const [newcomer, prayer, visit] = await Promise.all([
+  const [newcomer, prayer, visit, donation] = await Promise.all([
     supabase
       .from("newcomer_forms")
       .select("*", { count: "exact", head: true })
@@ -54,10 +67,16 @@ export async function countNewSubmissions(): Promise<{
       .from("visit_requests")
       .select("*", { count: "exact", head: true })
       .eq("status", "new"),
+    supabase
+      .from("donation_receipts")
+      .select("*", { count: "exact", head: true })
+      .is("deleted_at", null)
+      .eq("status", "new"),
   ]);
   return {
     newcomer: newcomer.count ?? 0,
     prayer: prayer.count ?? 0,
     visit: visit.count ?? 0,
+    donation: donation.count ?? 0,
   };
 }

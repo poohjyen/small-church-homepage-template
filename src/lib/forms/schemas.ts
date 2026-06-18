@@ -62,3 +62,53 @@ export const visitSchema = z.object({
   consent,
 });
 export type VisitInput = z.infer<typeof visitSchema>;
+
+const faxRegex = /^[0-9-+\s()]{8,20}$/;
+
+export const donationReceiptSchema = z
+  .object({
+    name: z.string().min(2, "성함을 입력해 주세요.").max(50),
+    birthdate: z.string().min(1, "생년월일을 입력해 주세요."),
+    phone: phoneRequired,
+    address: z.string().min(5, "주소를 입력해 주세요.").max(200),
+    delivery_method: z.enum(["pickup", "email", "fax"]),
+    delivery_email: z.string().optional(),
+    delivery_fax: z.string().optional(),
+    note: z.string().max(500).optional(),
+    consent,
+  })
+  .superRefine((val, ctx) => {
+    if (val.delivery_method === "email") {
+      const email = val.delivery_email?.trim() ?? "";
+      if (!email) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["delivery_email"],
+          message: "이메일을 입력해 주세요.",
+        });
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["delivery_email"],
+          message: "올바른 이메일 형식이 아닙니다.",
+        });
+      }
+    }
+    if (val.delivery_method === "fax") {
+      const fax = val.delivery_fax?.trim() ?? "";
+      if (!fax) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["delivery_fax"],
+          message: "팩스번호를 입력해 주세요.",
+        });
+      } else if (!faxRegex.test(fax) || (fax.match(/\d/g)?.length ?? 0) < 8) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["delivery_fax"],
+          message: "팩스번호를 정확히 입력해 주세요.",
+        });
+      }
+    }
+  });
+export type DonationReceiptInput = z.infer<typeof donationReceiptSchema>;

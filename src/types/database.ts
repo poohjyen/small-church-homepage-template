@@ -106,6 +106,27 @@ export type Database = {
         Update: Partial<PageBlock>;
         Relationships: [];
       };
+      site_popups: {
+        Row: SitePopup;
+        Insert: Omit<SitePopup, "id" | "created_at" | "updated_at" | "deleted_at"> &
+          Partial<
+            Pick<SitePopup, "id" | "created_at" | "updated_at" | "deleted_at">
+          >;
+        Update: Partial<SitePopup>;
+        Relationships: [];
+      };
+      donation_receipts: {
+        Row: DonationReceipt;
+        Insert: Omit<
+          DonationReceipt,
+          "id" | "status" | "created_at" | "deleted_at"
+        > &
+          Partial<
+            Pick<DonationReceipt, "id" | "status" | "created_at" | "deleted_at">
+          >;
+        Update: Partial<DonationReceipt>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -282,6 +303,7 @@ export type SettingValueMap = {
   contact: { address: string; phone: string; account: string };
   sns: { band: string; youtube: string; instagram: string };
   admin_email: string;
+  admin_emails: string[];
   page_hero_images: Record<string, string>;
   pastor_greeting: { name: string; photo_url: string; body: string };
   worship_schedules: { items: WorshipScheduleItem[] };
@@ -345,4 +367,79 @@ export type Video = {
   video_date: string;
   display_order: number;
   created_at: string;
+};
+
+// ── 기부금영수증 신청 (0009_donation_receipts) ──
+export type DonationDeliveryMethod = "pickup" | "email" | "fax";
+
+export type DonationReceipt = {
+  id: string;
+  name: string;
+  birthdate: string;
+  phone: string;
+  address: string;
+  delivery_method: DonationDeliveryMethod;
+  delivery_email: string | null;
+  delivery_fax: string | null;
+  note: string | null;
+  status: FormStatus;
+  admin_memo: string | null;
+  created_at: string;
+  deleted_at: string | null;
+};
+
+// ── 사이트 팝업/배너 (0010_site_popups) ──
+export const POPUP_POSITIONS = [
+  "center",
+  "top-right",
+  "bottom-right",
+  "top-left",
+  "bottom-left",
+] as const;
+export type PopupPosition = (typeof POPUP_POSITIONS)[number];
+
+export type SitePopup = {
+  id: string;
+  title: string;
+  image_url: string;
+  image_alt: string | null;
+  link_url: string | null;
+  link_target: "_self" | "_blank";
+  starts_at: string;
+  ends_at: string;
+  position: PopupPosition;
+  width: number;
+  width_mobile: number;
+  display_priority: number;
+  show_dont_show_today: boolean;
+  show_close_button: boolean;
+  pages: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+};
+
+// ── 방문자 통계 (0022_page_views, 0023_visitor_stats_fn) ──
+export type PageViewDevice = "pc" | "mobile" | "tablet" | "unknown";
+
+export type PageView = {
+  id: number;
+  path: string;
+  referrer_host: string | null;
+  device: PageViewDevice;
+  visitor_hash: string;
+  created_at: string;
+};
+
+// get_visitor_stats RPC 반환 형태
+export type VisitorStatsJson = {
+  daily: { date: string; views: number; visitors: number }[];
+  today: { views: number; visitors: number };
+  yesterday: { views: number; visitors: number };
+  last7: { views: number; visitors: number };
+  topPages: { path: string; views: number }[];
+  topReferrers: { host: string; count: number }[];
+  devices: { pc: number; mobile: number; tablet: number; unknown: number };
+  total: number;
 };

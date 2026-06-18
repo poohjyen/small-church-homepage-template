@@ -30,7 +30,11 @@ async function requireAdmin() {
 }
 
 async function updateRow(
-  table: "newcomer_forms" | "prayer_requests" | "visit_requests",
+  table:
+    | "newcomer_forms"
+    | "prayer_requests"
+    | "visit_requests"
+    | "donation_receipts",
   input: unknown,
   revalidate: string,
 ): Promise<Result> {
@@ -64,4 +68,14 @@ export async function updatePrayerSubmission(input: unknown): Promise<Result> {
 
 export async function updateVisitSubmission(input: unknown): Promise<Result> {
   return updateRow("visit_requests", input, "/admin/forms/visit");
+}
+
+export async function updateDonationReceiptSubmission(
+  input: unknown,
+): Promise<Result> {
+  return updateRow(
+    "donation_receipts",
+    input,
+    "/admin/forms/donation-receipt",
+  );
 }

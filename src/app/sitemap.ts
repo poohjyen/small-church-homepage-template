@@ -22,6 +22,7 @@ const STATIC_PATHS: { path: string; changeFrequency: MetadataRoute.Sitemap[numbe
   { path: "/forms/newcomer", changeFrequency: "yearly", priority: 0.5 },
   { path: "/forms/prayer", changeFrequency: "yearly", priority: 0.5 },
   { path: "/forms/visit", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/forms/donation-receipt", changeFrequency: "yearly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
   { path: "/site-map", changeFrequency: "yearly", priority: 0.3 },
